@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Banetæller Build001</title>
+  <meta name="theme-color" content="#101820" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="top">
+      <h1>🏃 Banetæller</h1>
+      <p>Build001</p>
+    </header>
+
+    <section class="status">
+      <div id="gpsText">GPS ikke startet</div>
+    </section>
+
+    <section class="main-display">
+      <div class="label">Tid</div>
+      <div id="time">00:00:00</div>
+    </section>
+
+    <section class="stats">
+      <div class="card"><span>Omgange</span><strong id="laps">0</strong></div>
+      <div class="card"><span>Distance</span><strong id="distance">0.00 km</strong></div>
+      <div class="card"><span>Sidste omgang</span><strong id="lapTime">--:--</strong></div>
+      <div class="card"><span>Beløb</span><strong id="money">0 kr</strong></div>
+    </section>
+
+    <section class="map-section">
+      <div id="map"></div>
+    </section>
+
+    <section class="buttons">
+      <button id="startBtn">START</button>
+      <button id="stopBtn">STOP</button>
+    </section>
+  </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="settings.js"></script>
+  <script src="utils.js"></script>
+  <script src="voice.js"></script>
+  <script src="gpx.js"></script>
+  <script src="gps.js"></script>
+  <script src="lapEngine.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
