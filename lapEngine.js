@@ -1,66 +1,114 @@
-let checkpoints=[];
-let currentCheckpoint=0;
-let lapCounter=0;
-let lapStartTime=null;
-let lapStarted=false;
+// ======================================
+// BANETÆLLER
+// Build004
+// lapEngine.js
+// ======================================
 
-function buildCheckpoints(){
-  checkpoints=[];
-  if(!gpxRoute || gpxRoute.length===0) return;
+let lapCount = 0;
+let lapArmed = false;
+let lapStartTime = null;
 
-  const step=Math.max(1,Math.floor(gpxRoute.length/CHECKPOINT_COUNT));
-  for(let i=0;i<gpxRoute.length;i+=step){
-    checkpoints.push({lat:gpxRoute[i][0],lng:gpxRoute[i][1],reached:false});
-  }
-  resetLapEngine();
-  debugLog("Checkpoints",checkpoints.length);
+function resetLapEngine() {
+    lapCount = 0;
+    lapArmed = false;
+    lapStartTime = null;
+
+    updateLapDisplay();
 }
 
-function resetLapEngine(){
-  currentCheckpoint=0;
-  lapStartTime=null;
-  lapStarted=false;
-  checkpoints.forEach(cp=>cp.reached=false);
-}
-
-function updateLapEngine(lat,lng,accuracy,totalDistance){
-  if(!running) return;
-  if(checkpoints.length===0) return;
-  if(currentCheckpoint>=checkpoints.length) return;
-
-  const near=nearestPoint(lat,lng);
-  if(near && near.distance>ROUTE_TOLERANCE){
-    gpsText.innerText="Uden for banen "+Math.round(near.distance)+" m";
-    return;
-  }
-
-  if(!lapStarted){
-    lapStarted=true;
-    lapStartTime=Date.now();
-  }
-
-  const cp=checkpoints[currentCheckpoint];
-  const d=distanceBetween(lat,lng,cp.lat,cp.lng);
-
-  if(d<=ROUTE_TOLERANCE){
-    cp.reached=true;
-    currentCheckpoint++;
-    debugLog("Checkpoint",currentCheckpoint,"/",checkpoints.length);
-
-    if(currentCheckpoint>=checkpoints.length){
-      finishLap();
+function updateLapEngine(lat, lng) {
+    if (!startPoint) {
+        return;
     }
-  }
+
+    const distanceToStart = distanceBetween(
+        lat,
+        lng,
+        startPoint.lat,
+        startPoint.lng
+    );
+
+    // Brugeren skal først væk fra start/mål
+    // før en omgang kan tælles
+    if (
+        !lapArmed &&
+        distanceToStart >= LEAVE_START_DISTANCE
+    ) {
+        lapArmed = true;
+
+        if (lapStartTime === null) {
+            lapStartTime = Date.now();
+        }
+    }
+
+    // Når brugeren kommer tilbage til start/mål,
+    // tælles én omgang
+    if (
+        lapArmed &&
+        distanceToStart <= START_RADIUS
+    ) {
+        finishLap();
+    }
 }
 
-function finishLap(){
-  lapCounter++;
-  const lapSeconds=lapStartTime ? Math.floor((Date.now()-lapStartTime)/1000) : 0;
+function finishLap() {
+    lapCount++;
 
-  lapsElement.innerText=String(lapCounter);
-  lapTimeElement.innerText=formatLapTime(lapSeconds);
-  moneyElement.innerText=(lapCounter*MONEY_PER_LAP)+" kr";
+    const now = Date.now();
 
-  announceLap(lapCounter,formatLapTime(lapSeconds));
-  resetLapEngine();
+    let lapSeconds = 0;
+
+    if (lapStartTime !== null) {
+        lapSeconds = Math.floor(
+            (now - lapStartTime) / 1000
+        );
+    }
+
+    lapArmed = false;
+    lapStartTime = now;
+
+    updateLapDisplay(lapSeconds);
+}
+
+function updateLapDisplay(lapSeconds = null) {
+    const lapsElement =
+        document.getElementById("laps");
+
+    const lapTimeElement =
+        document.getElementById("lapTime");
+
+    const moneyElement =
+        document.getElementById("money");
+
+    if (lapsElement) {
+        lapsElement.textContent = lapCount;
+    }
+
+    if (
+        lapTimeElement &&
+        lapSeconds !== null
+    ) {
+        lapTimeElement.textContent =
+            formatLapTime(lapSeconds);
+    }
+
+    if (moneyElement) {
+        moneyElement.textContent =
+            (lapCount * MONEY_PER_LAP) +
+            " kr.";
+    }
+}
+
+function formatLapTime(totalSeconds) {
+    const minutes =
+        Math.floor(totalSeconds / 60);
+
+    const seconds =
+        totalSeconds % 60;
+
+    return (
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0")
+    );
 }
