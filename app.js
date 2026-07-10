@@ -1,6 +1,6 @@
 // ======================================
 // BANETÆLLER
-// Build006 – Banebibliotek
+// Build006 Stable – Banebibliotek
 // app.js
 // ======================================
 
@@ -25,17 +25,6 @@ const stopBtn = document.getElementById("stopBtn");
 const saveStartBtn = document.getElementById("saveStartBtn");
 const newTrackBtn = document.getElementById("newTrackBtn");
 const tracksBtn = document.getElementById("tracksBtn");
-function updateTrackButton() {
-
-    if (!tracksBtn) return;
-
-    const count = getTrackCount();
-
-    tracksBtn.textContent =
-        "📚 BANEBIBLIOTEK (" + count + ")";
-
-}
-
 
 const gpsText = document.getElementById("gpsText");
 const startPointText = document.getElementById("startPointText");
@@ -47,6 +36,23 @@ const trackList = document.getElementById("trackList");
 const closeLibraryBtn = document.getElementById("closeLibraryBtn");
 const libraryNewTrackBtn = document.getElementById("libraryNewTrackBtn");
 
+function updateTrackButton() {
+  if (!tracksBtn) return;
+
+  try {
+    const count =
+      typeof getTrackCount === "function"
+        ? getTrackCount()
+        : 0;
+
+    tracksBtn.textContent =
+      "📚 BANEBIBLIOTEK (" + count + ")";
+  } catch (error) {
+    console.error("Kunne ikke tælle gemte baner:", error);
+    tracksBtn.textContent = "📚 BANEBIBLIOTEK";
+  }
+}
+
 function initMap() {
   if (typeof L === "undefined") {
     throw new Error("Leaflet blev ikke indlæst");
@@ -57,30 +63,63 @@ function initMap() {
     MAP_START.zoom
   );
 
-  L.tileLayer(
+  const osmLayer = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       maxZoom: 22,
       attribution: "&copy; OpenStreetMap"
     }
-  ).addTo(map);
+  );
+
+  let fallbackStarted = false;
+
+  osmLayer.on("tileerror", () => {
+    if (fallbackStarted) return;
+    fallbackStarted = true;
+
+    console.warn(
+      "OpenStreetMap-fliser kunne ikke hentes. Skifter kortudbyder."
+    );
+
+    if (map.hasLayer(osmLayer)) {
+      map.removeLayer(osmLayer);
+    }
+
+    L.tileLayer(
+      "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",
+      {
+        maxZoom: 20,
+        subdomains: "abcd",
+        attribution:
+          "&copy; OpenStreetMap &copy; CARTO"
+      }
+    ).addTo(map);
+  });
+
+  osmLayer.addTo(map);
 
   setTimeout(() => map.invalidateSize(), 200);
 }
 
 function updateGpsStatus(accuracy) {
   gpsText.textContent = recordingTrack
-    ? "🛣️ Optager bane – GPS ±" + Math.round(accuracy) + " m"
-    : "GPS OK ±" + Math.round(accuracy) + " m";
+    ? "🛣️ Optager bane – GPS ±" +
+      Math.round(accuracy) +
+      " m"
+    : "GPS OK ±" +
+      Math.round(accuracy) +
+      " m";
 }
 
 function showGpsError(error) {
   if (error && error.code === 1) {
     gpsText.textContent = "GPS-tilladelse mangler";
   } else if (error && error.code === 2) {
-    gpsText.textContent = "GPS-position kan ikke findes";
+    gpsText.textContent =
+      "GPS-position kan ikke findes";
   } else if (error && error.code === 3) {
-    gpsText.textContent = "GPS bruger for lang tid";
+    gpsText.textContent =
+      "GPS bruger for lang tid";
   } else {
     gpsText.textContent = "GPS-fejl";
   }
@@ -110,13 +149,17 @@ function updateUserMarker(lat, lng, accuracy) {
 
   map.setView(position, 18);
 
-  if (recordingTrack && accuracy <= MAX_GPS_ACCURACY) {
+  if (
+    recordingTrack &&
+    accuracy <= MAX_GPS_ACCURACY
+  ) {
     addRecordedTrackPoint(lat, lng);
   }
 }
 
 function updateDistanceDisplay(meters) {
-  distanceElement.textContent = formatDistance(meters);
+  distanceElement.textContent =
+    formatDistance(meters);
 }
 
 function startTraining() {
@@ -151,8 +194,12 @@ function stopTraining() {
   stopTimer();
   stopGPS();
 
-  if (wasRecordingTrack && recordedPoints.length >= 2) {
-    const saved = saveRecordedTrackToLibrary();
+  if (
+    wasRecordingTrack &&
+    recordedPoints.length >= 2
+  ) {
+    const saved =
+      saveRecordedTrackToLibrary();
 
     gpsText.textContent = saved
       ? "Stoppet – bane gemt"
@@ -176,7 +223,8 @@ function startTimer() {
       (Date.now() - startTime) / 1000
     );
 
-    timeElement.textContent = formatTime(seconds);
+    timeElement.textContent =
+      formatTime(seconds);
   }, 1000);
 }
 
@@ -192,16 +240,24 @@ function saveStartPoint() {
   let lng = Number(window.currentLng);
 
   if (
-    (!Number.isFinite(lat) || !Number.isFinite(lng)) &&
+    (!Number.isFinite(lat) ||
+      !Number.isFinite(lng)) &&
     userMarker
   ) {
-    const markerPosition = userMarker.getLatLng();
+    const markerPosition =
+      userMarker.getLatLng();
+
     lat = Number(markerPosition.lat);
     lng = Number(markerPosition.lng);
   }
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-    alert("Tryk START og vent, til der står GPS OK.");
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lng)
+  ) {
+    alert(
+      "Tryk START og vent, til der står GPS OK."
+    );
     return;
   }
 
@@ -217,9 +273,13 @@ function saveStartPoint() {
   );
 
   showStartMarker();
-  startPointText.textContent = "🏁 Start/mål er gemt";
+  startPointText.textContent =
+    "🏁 Start/mål er gemt";
 
-  if (typeof announceStartPointSaved === "function") {
+  if (
+    typeof announceStartPointSaved ===
+    "function"
+  ) {
     announceStartPointSaved();
   }
 
@@ -229,7 +289,10 @@ function saveStartPoint() {
 function showStartMarker() {
   if (!startPoint || !map) return;
 
-  const position = [startPoint.lat, startPoint.lng];
+  const position = [
+    startPoint.lat,
+    startPoint.lng
+  ];
 
   if (startMarker) {
     startMarker.setLatLng(position);
@@ -250,21 +313,16 @@ function showStartMarker() {
   }
 }
 
-function removeStartMarker() {
-  if (startMarker && map) {
-    map.removeLayer(startMarker);
-    startMarker = null;
-  }
-}
-
 function loadSavedStartPoint() {
   try {
-    const savedText = localStorage.getItem(
-      "banetaeller_startpoint"
-    );
+    const savedText =
+      localStorage.getItem(
+        "banetaeller_startpoint"
+      );
 
     if (!savedText) {
-      startPointText.textContent = "Intet start/mål gemt";
+      startPointText.textContent =
+        "Intet start/mål gemt";
       return;
     }
 
@@ -272,8 +330,12 @@ function loadSavedStartPoint() {
     const lat = Number(saved.lat);
     const lng = Number(saved.lng);
 
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      startPointText.textContent = "Intet start/mål gemt";
+    if (
+      !Number.isFinite(lat) ||
+      !Number.isFinite(lng)
+    ) {
+      startPointText.textContent =
+        "Intet start/mål gemt";
       return;
     }
 
@@ -283,10 +345,15 @@ function loadSavedStartPoint() {
       savedAt: saved.savedAt || null
     };
 
-    startPointText.textContent = "🏁 Start/mål er gemt";
+    startPointText.textContent =
+      "🏁 Start/mål er gemt";
+
     showStartMarker();
   } catch (error) {
-    console.error("Kunne ikke hente start/mål:", error);
+    console.error(
+      "Kunne ikke hente start/mål:",
+      error
+    );
   }
 }
 
@@ -301,7 +368,8 @@ function startNewTrack() {
     startTraining();
   }
 
-  gpsText.textContent = "🛣️ Optager ny bane...";
+  gpsText.textContent =
+    "🛣️ Optager ny bane...";
 }
 
 function addRecordedTrackPoint(lat, lng) {
@@ -309,7 +377,9 @@ function addRecordedTrackPoint(lat, lng) {
 
   if (recordedPoints.length > 0) {
     const previousPoint =
-      recordedPoints[recordedPoints.length - 1];
+      recordedPoints[
+        recordedPoints.length - 1
+      ];
 
     const moved = distanceBetween(
       previousPoint[0],
@@ -366,16 +436,21 @@ function sanitizeTrackPoints(points) {
 }
 
 function saveRecordedTrackToLibrary() {
-  const points = sanitizeTrackPoints(recordedPoints);
+  const points =
+    sanitizeTrackPoints(recordedPoints);
 
   if (points.length < 2) {
-    alert("Banen er for kort til at blive gemt.");
+    alert(
+      "Banen er for kort til at blive gemt."
+    );
     return false;
   }
 
   const suggestedName =
     "Bane " +
-    new Date().toLocaleDateString("da-DK");
+    new Date().toLocaleDateString(
+      "da-DK"
+    );
 
   const enteredName = window.prompt(
     "Hvad skal banen hedde?",
@@ -386,7 +461,8 @@ function saveRecordedTrackToLibrary() {
     return false;
   }
 
-  const name = enteredName.trim() || suggestedName;
+  const name =
+    enteredName.trim() || suggestedName;
 
   try {
     const savedTrack = addTrack({
@@ -396,7 +472,9 @@ function saveRecordedTrackToLibrary() {
         ? {
             lat: Number(startPoint.lat),
             lng: Number(startPoint.lng),
-            savedAt: startPoint.savedAt || Date.now()
+            savedAt:
+              startPoint.savedAt ||
+              Date.now()
           }
         : null
     });
@@ -404,9 +482,14 @@ function saveRecordedTrackToLibrary() {
     selectedTrackId = savedTrack.id;
     recordedPoints = savedTrack.points;
 
+    updateTrackButton();
+
     return true;
   } catch (error) {
-    console.error("Banen kunne ikke gemmes:", error);
+    console.error(
+      "Banen kunne ikke gemmes:",
+      error
+    );
 
     alert(
       "Banen kunne ikke gemmes.\n\n" +
@@ -422,12 +505,18 @@ function saveRecordedTrackToLibrary() {
 function openTrackLibrary() {
   renderTrackLibrary();
   trackLibraryModal.hidden = false;
-  document.body.classList.add("modal-open");
+
+  document.body.classList.add(
+    "modal-open"
+  );
 }
 
 function closeTrackLibrary() {
   trackLibraryModal.hidden = true;
-  document.body.classList.remove("modal-open");
+
+  document.body.classList.remove(
+    "modal-open"
+  );
 
   setTimeout(() => {
     if (map) map.invalidateSize();
@@ -435,16 +524,20 @@ function closeTrackLibrary() {
 }
 
 function renderTrackLibrary() {
-	updateTrackButton();
+  updateTrackButton();
+
   const tracks = getTrackDatabase();
 
   trackList.innerHTML = "";
 
   if (tracks.length === 0) {
-    const empty = document.createElement("div");
+    const empty =
+      document.createElement("div");
+
     empty.className = "track-empty";
     empty.textContent =
       "Du har ingen gemte baner endnu.";
+
     trackList.appendChild(empty);
     return;
   }
@@ -456,52 +549,86 @@ function renderTrackLibrary() {
   );
 
   newestFirst.forEach(track => {
-    const card = document.createElement("article");
+    const card =
+      document.createElement("article");
+
     card.className = "track-card";
 
-    const main = document.createElement("div");
+    const main =
+      document.createElement("div");
+
     main.className = "track-main";
 
-    const name = document.createElement("span");
-    name.className = "track-name";
-    name.textContent = "🏃 " + track.name;
+    const name =
+      document.createElement("span");
 
-    const meta = document.createElement("span");
+    name.className = "track-name";
+    name.textContent =
+      "🏃 " + track.name;
+
+    const meta =
+      document.createElement("span");
+
     meta.className = "track-meta";
 
-    const pointCount = Array.isArray(track.points)
-      ? track.points.length
-      : 0;
+    const pointCount =
+      Array.isArray(track.points)
+        ? track.points.length
+        : 0;
 
     const date = track.createdAt
-      ? new Date(track.createdAt).toLocaleDateString("da-DK")
+      ? new Date(
+          track.createdAt
+        ).toLocaleDateString("da-DK")
       : "Ukendt dato";
 
     meta.textContent =
-      pointCount + " GPS-punkter · " + date;
+      pointCount +
+      " GPS-punkter · " +
+      date;
 
     main.append(name, meta);
 
-    const actions = document.createElement("div");
+    const actions =
+      document.createElement("div");
+
     actions.className = "track-actions";
 
-    const useButton = document.createElement("button");
+    const useButton =
+      document.createElement("button");
+
     useButton.type = "button";
     useButton.className = "track-use";
     useButton.textContent = "Vælg";
-    useButton.addEventListener("click", () => {
-      selectTrack(track.id);
-    });
 
-    const deleteButton = document.createElement("button");
+    useButton.addEventListener(
+      "click",
+      () => selectTrack(track.id)
+    );
+
+    const deleteButton =
+      document.createElement("button");
+
     deleteButton.type = "button";
-    deleteButton.className = "track-delete";
-    deleteButton.textContent = "Slet";
-    deleteButton.addEventListener("click", () => {
-      deleteTrackFromLibrary(track.id, track.name);
-    });
+    deleteButton.className =
+      "track-delete";
 
-    actions.append(useButton, deleteButton);
+    deleteButton.textContent = "Slet";
+
+    deleteButton.addEventListener(
+      "click",
+      () =>
+        deleteTrackFromLibrary(
+          track.id,
+          track.name
+        )
+    );
+
+    actions.append(
+      useButton,
+      deleteButton
+    );
+
     card.append(main, actions);
     trackList.appendChild(card);
   });
@@ -515,10 +642,13 @@ function selectTrack(id) {
     return;
   }
 
-  const points = sanitizeTrackPoints(track.points);
+  const points =
+    sanitizeTrackPoints(track.points);
 
   if (points.length < 2) {
-    alert("Banen indeholder ikke nok GPS-punkter.");
+    alert(
+      "Banen indeholder ikke nok GPS-punkter."
+    );
     return;
   }
 
@@ -530,10 +660,16 @@ function selectTrack(id) {
   drawTrack(recordedPoints);
 
   if (track.startPoint) {
-    const lat = Number(track.startPoint.lat);
-    const lng = Number(track.startPoint.lng);
+    const lat =
+      Number(track.startPoint.lat);
 
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    const lng =
+      Number(track.startPoint.lng);
+
+    if (
+      Number.isFinite(lat) &&
+      Number.isFinite(lng)
+    ) {
       startPoint = {
         lat,
         lng,
@@ -548,6 +684,7 @@ function selectTrack(id) {
       );
 
       showStartMarker();
+
       startPointText.textContent =
         "🏁 Start/mål er gemt";
     }
@@ -567,9 +704,14 @@ function selectTrack(id) {
   closeTrackLibrary();
 }
 
-function deleteTrackFromLibrary(id, name) {
+function deleteTrackFromLibrary(
+  id,
+  name
+) {
   const confirmed = window.confirm(
-    'Vil du slette banen "' + name + '"?'
+    'Vil du slette banen "' +
+    name +
+    '"?'
   );
 
   if (!confirmed) return;
@@ -583,13 +725,33 @@ function deleteTrackFromLibrary(id, name) {
   }
 
   renderTrackLibrary();
+  updateTrackButton();
 }
 
-startBtn.addEventListener("click", startTraining);
-stopBtn.addEventListener("click", stopTraining);
-saveStartBtn.addEventListener("click", saveStartPoint);
-newTrackBtn.addEventListener("click", startNewTrack);
-tracksBtn.addEventListener("click", openTrackLibrary);
+startBtn.addEventListener(
+  "click",
+  startTraining
+);
+
+stopBtn.addEventListener(
+  "click",
+  stopTraining
+);
+
+saveStartBtn.addEventListener(
+  "click",
+  saveStartPoint
+);
+
+newTrackBtn.addEventListener(
+  "click",
+  startNewTrack
+);
+
+tracksBtn.addEventListener(
+  "click",
+  openTrackLibrary
+);
 
 closeLibraryBtn.addEventListener(
   "click",
@@ -619,7 +781,6 @@ trackLibraryModal.addEventListener(
 
 initMap();
 loadSavedStartPoint();
-
 updateTrackButton();
 
 // Build006 starter uden automatisk blå bane.
