@@ -256,6 +256,68 @@ function stopTimer() {
 // ======================================
 
 function saveStartPoint() {
+    try {
+        let lat = Number(window.currentLat);
+        let lng = Number(window.currentLng);
+
+        // Ekstra sikkerhed: hent positionen fra kortmarkøren
+        // hvis GPS-koordinaterne ikke findes i window endnu.
+        if (
+            (!Number.isFinite(lat) || !Number.isFinite(lng)) &&
+            userMarker
+        ) {
+            const markerPosition = userMarker.getLatLng();
+
+            lat = Number(markerPosition.lat);
+            lng = Number(markerPosition.lng);
+        }
+
+        if (
+            !Number.isFinite(lat) ||
+            !Number.isFinite(lng)
+        ) {
+            alert("Tryk START og vent, til der står GPS OK.");
+            return;
+        }
+
+        startPoint = {
+            lat: lat,
+            lng: lng,
+            savedAt: Date.now()
+        };
+
+        // Gem direkte uden hjælp fra andre filer
+        localStorage.setItem(
+            "banetaeller_startpoint",
+            JSON.stringify(startPoint)
+        );
+
+        showStartMarker();
+
+        if (startPointText) {
+            startPointText.textContent =
+                "🏁 Start/mål er gemt";
+        }
+
+        if (
+            typeof announceStartPointSaved ===
+            "function"
+        ) {
+            announceStartPointSaved();
+        }
+
+        alert("Start/mål er gemt.");
+    } catch (error) {
+        console.error("Fejl ved Gem start/mål:", error);
+
+        alert(
+            "Start/mål kunne ikke gemmes: " +
+            error.message
+        );
+    }
+}
+
+
     const lat = Number(window.currentLat);
     const lng = Number(window.currentLng);
 
@@ -328,12 +390,22 @@ function showStartMarker() {
         }
     ).addTo(map);
 
-    startMarker.bindPopup("🏁 Start/mål");
+    startMarker.bindPopup("?? Start/mål");
 }
 
 function loadSavedStartPoint() {
-    const saved = loadJSON(
-        STORAGE_KEYS.START_POINT
+    let saved = null;
+
+try {
+    const savedText =
+        localStorage.getItem("banetaeller_startpoint");
+
+    if (savedText) {
+        saved = JSON.parse(savedText);
+    }
+} catch (error) {
+    console.error("Kunne ikke hente start/mål:", error);
+}
     );
 
     if (!saved) {
