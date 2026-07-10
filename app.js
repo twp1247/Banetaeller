@@ -1,208 +1,489 @@
-// Banetæller Build003 – app.js
+// ======================================
+// BANETÆLLER
+// Build003 Stable
+// app.js
+// ======================================
 
+// Kort og markører
 let map = null;
 let userMarker = null;
 let accuracyCircle = null;
 let startMarker = null;
-let trackLine = null;
 
+// Træning
 let running = false;
-let recordingTrack = false;
-let recordedPoints = [];
 let startTime = null;
 let timerInterval = null;
+
+// Start/mål
 let startPoint = null;
 
+// Baneoptagelse
+let recordingTrack = false;
+let recordedPoints = [];
+let trackLine = null;
+
+// Knapper
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const saveStartBtn = document.getElementById("saveStartBtn");
 const newTrackBtn = document.getElementById("newTrackBtn");
 
+// Tekst og statistik
 const gpsText = document.getElementById("gpsText");
 const startPointText = document.getElementById("startPointText");
 const timeElement = document.getElementById("time");
 const distanceElement = document.getElementById("distance");
 
+
+// ======================================
+// KORT
+// ======================================
+
 function initMap() {
-  map = L.map("map").setView(
-    [MAP_START.lat, MAP_START.lng],
-    MAP_START.zoom
-  );
+    if (typeof L === "undefined") {
+        console.error("Leaflet blev ikke indlæst.");
+        return;
+    }
 
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 22,
-    attribution: "&copy; OpenStreetMap"
-  }).addTo(map);
+    const mapElement = document.getElementById("map");
 
-  setTimeout(() => map.invalidateSize(), 150);
+    if (!mapElement) {
+        console.error("Kort-elementet blev ikke fundet.");
+        return;
+    }
+
+    map = L.map("map").setView(
+        [MAP_START.lat, MAP_START.lng],
+        MAP_START.zoom
+    );
+
+    L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        {
+            maxZoom: 22,
+            attribution: "&copy; OpenStreetMap"
+        }
+    ).addTo(map);
+
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
 }
 
+
+// ======================================
+// GPS-VISNING
+// Disse funktioner kaldes fra gps.js
+// ======================================
+
 function updateGpsStatus(accuracy) {
-  gpsText.textContent = "GPS OK ±" + Math.round(accuracy) + " m";
+    if (!gpsText) {
+        return;
+    }
+
+    if (recordingTrack) {
+        gpsText.textContent =
+            "🛣️ Optager bane – GPS ±" +
+            Math.round(accuracy) +
+            " m";
+    } else {
+        gpsText.textContent =
+            "GPS OK ±" +
+            Math.round(accuracy) +
+            " m";
+    }
 }
 
 function showGpsError(error) {
-  if (error?.code === 1) gpsText.textContent = "GPS-tilladelse mangler";
-  else if (error?.code === 2) gpsText.textContent = "GPS-position kan ikke findes";
-  else if (error?.code === 3) gpsText.textContent = "GPS bruger for lang tid";
-  else gpsText.textContent = "GPS-fejl";
+    if (!gpsText) {
+        return;
+    }
+
+    if (error && error.code === 1) {
+        gpsText.textContent = "GPS-tilladelse mangler";
+    } else if (error && error.code === 2) {
+        gpsText.textContent = "GPS-position kan ikke findes";
+    } else if (error && error.code === 3) {
+        gpsText.textContent = "GPS bruger for lang tid";
+    } else {
+        gpsText.textContent = "GPS-fejl";
+    }
 }
 
 function updateUserMarker(lat, lng, accuracy) {
-  const position = [lat, lng];
-
-  if (userMarker) userMarker.setLatLng(position);
-  else userMarker = L.marker(position, { title: "Din position" }).addTo(map);
-
-  if (accuracyCircle) {
-    accuracyCircle.setLatLng(position);
-    accuracyCircle.setRadius(accuracy);
-  } else {
-    accuracyCircle = L.circle(position, {
-      radius: accuracy,
-      weight: 1,
-      fillOpacity: 0.08
-    }).addTo(map);
-  }
-
-  map.setView(position, 18);
-
-  if (recordingTrack) {
-    recordedPoints.push(position);
-
-    if (!trackLine) {
-      trackLine = L.polyline(recordedPoints, {
-        weight: 5,
-        opacity: 0.9
-      }).addTo(map);
-    } else {
-      trackLine.setLatLngs(recordedPoints);
+    if (!map) {
+        return;
     }
-  }
+
+    const position = [lat, lng];
+
+    // Blå GPS-markør
+    if (userMarker) {
+        userMarker.setLatLng(position);
+    } else {
+        userMarker = L.marker(position, {
+            title: "Din position"
+        }).addTo(map);
+    }
+
+    // Cirkel der viser GPS-nøjagtighed
+    if (accuracyCircle) {
+        accuracyCircle.setLatLng(position);
+        accuracyCircle.setRadius(accuracy);
+    } else {
+        accuracyCircle = L.circle(position, {
+            radius: accuracy,
+            weight: 1,
+            fillOpacity: 0.08
+        }).addTo(map);
+    }
+
+    map.setView(position, 18);
+
+    // Gem og tegn GPS-punkt under baneoptagelse
+    if (
+        recordingTrack &&
+        accuracy <= MAX_GPS_ACCURACY
+    ) {
+        addRecordedTrackPoint(lat, lng);
+    }
 }
 
 function updateDistanceDisplay(meters) {
-  distanceElement.textContent = formatDistance(meters);
+    if (!distanceElement) {
+        return;
+    }
+
+    distanceElement.textContent =
+        formatDistance(meters);
 }
+
+
+// ======================================
+// START TRÆNING
+// ======================================
 
 function startTraining() {
-  if (running) return;
+    if (running) {
+        return;
+    }
 
-  running = true;
-  startTime = Date.now();
-  resetGPS();
-  startTimer();
-  gpsText.textContent = "Starter GPS...";
-  startGPS();
-  announceStart();
+    running = true;
+    startTime = Date.now();
+
+    if (typeof resetGPS === "function") {
+        resetGPS();
+    }
+
+    startTimer();
+
+    if (gpsText) {
+        gpsText.textContent = "Starter GPS...";
+    }
+
+    if (typeof startGPS === "function") {
+        startGPS();
+    }
+
+    if (typeof announceStart === "function") {
+        announceStart();
+    }
 }
+
+
+// ======================================
+// STOP
+// ======================================
 
 function stopTraining() {
-  running = false;
-  recordingTrack = false;
-  stopTimer();
-  stopGPS();
-  gpsText.textContent = "Stoppet";
-  announceStop();
+    if (!running && !recordingTrack) {
+        return;
+    }
+
+    running = false;
+    recordingTrack = false;
+
+    stopTimer();
+
+    if (typeof stopGPS === "function") {
+        stopGPS();
+    }
+
+    if (gpsText) {
+        gpsText.textContent = "Stoppet";
+    }
+
+    if (typeof announceStop === "function") {
+        announceStop();
+    }
 }
 
-function startTimer() {
-  stopTimer();
 
-  timerInterval = window.setInterval(() => {
-    if (!running || startTime === null) return;
-    const seconds = Math.floor((Date.now() - startTime) / 1000);
-    timeElement.textContent = formatTime(seconds);
-  }, 1000);
+// ======================================
+// TIMER
+// ======================================
+
+function startTimer() {
+    stopTimer();
+
+    timerInterval = window.setInterval(() => {
+        if (!running || startTime === null) {
+            return;
+        }
+
+        const seconds = Math.floor(
+            (Date.now() - startTime) / 1000
+        );
+
+        if (timeElement) {
+            timeElement.textContent =
+                formatTime(seconds);
+        }
+    }, 1000);
 }
 
 function stopTimer() {
-  if (timerInterval !== null) {
-    window.clearInterval(timerInterval);
-    timerInterval = null;
-  }
+    if (timerInterval !== null) {
+        window.clearInterval(timerInterval);
+        timerInterval = null;
+    }
 }
 
+
+// ======================================
+// GEM START/MÅL
+// ======================================
+
 function saveStartPoint() {
-  const lat = Number(window.currentLat);
-  const lng = Number(window.currentLng);
+    const lat = Number(window.currentLat);
+    const lng = Number(window.currentLng);
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-    alert("Tryk først START og vent, til GPS er klar.");
-    return;
-  }
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+    ) {
+        alert(
+            "Tryk START og vent, til GPS er klar."
+        );
 
-  startPoint = { lat, lng, savedAt: Date.now() };
-  saveJSON(STORAGE_KEYS.START_POINT, startPoint);
-  showStartMarker();
-  startPointText.textContent = "🏁 Start/mål er gemt";
-  announceStartPointSaved();
-  alert("Start/mål er gemt.");
+        return;
+    }
+
+    startPoint = {
+        lat: lat,
+        lng: lng,
+        savedAt: Date.now()
+    };
+
+    saveJSON(
+        STORAGE_KEYS.START_POINT,
+        startPoint
+    );
+
+    showStartMarker();
+
+    if (startPointText) {
+        startPointText.textContent =
+            "🏁 Start/mål er gemt";
+    }
+
+    if (
+        typeof announceStartPointSaved ===
+        "function"
+    ) {
+        announceStartPointSaved();
+    }
+
+    alert("Start/mål er gemt.");
 }
 
 function showStartMarker() {
-  if (!startPoint || !map) return;
+    if (!startPoint || !map) {
+        return;
+    }
 
-  const position = [startPoint.lat, startPoint.lng];
+    const position = [
+        startPoint.lat,
+        startPoint.lng
+    ];
 
-  if (startMarker) {
-    startMarker.setLatLng(position);
-  } else {
-    const icon = L.divIcon({
-      className: "start-marker",
-      html: "🏁",
-      iconSize: [36, 36],
-      iconAnchor: [18, 30]
+    if (startMarker) {
+        startMarker.setLatLng(position);
+        return;
+    }
+
+    const startIcon = L.divIcon({
+        className: "start-marker",
+        html: "🏁",
+        iconSize: [36, 36],
+        iconAnchor: [18, 30]
     });
 
-    startMarker = L.marker(position, {
-      icon,
-      title: "Start/mål"
-    }).addTo(map);
+    startMarker = L.marker(
+        position,
+        {
+            icon: startIcon,
+            title: "Start/mål"
+        }
+    ).addTo(map);
 
     startMarker.bindPopup("🏁 Start/mål");
-  }
 }
 
 function loadSavedStartPoint() {
-  const saved = loadJSON(STORAGE_KEYS.START_POINT);
+    const saved = loadJSON(
+        STORAGE_KEYS.START_POINT
+    );
 
-  if (!saved) {
-    startPointText.textContent = "Intet start/mål gemt";
-    return;
-  }
+    if (!saved) {
+        if (startPointText) {
+            startPointText.textContent =
+                "Intet start/mål gemt";
+        }
 
-  const lat = Number(saved.lat);
-  const lng = Number(saved.lng);
+        return;
+    }
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-    startPointText.textContent = "Intet start/mål gemt";
-    return;
-  }
+    const lat = Number(saved.lat);
+    const lng = Number(saved.lng);
 
-  startPoint = { lat, lng, savedAt: saved.savedAt ?? null };
-  startPointText.textContent = "🏁 Start/mål er gemt";
-  showStartMarker();
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+    ) {
+        if (startPointText) {
+            startPointText.textContent =
+                "Intet start/mål gemt";
+        }
+
+        return;
+    }
+
+    startPoint = {
+        lat: lat,
+        lng: lng,
+        savedAt: saved.savedAt || null
+    };
+
+    if (startPointText) {
+        startPointText.textContent =
+            "🏁 Start/mål er gemt";
+    }
+
+    showStartMarker();
 }
+
+
+// ======================================
+// NY BANE
+// ======================================
 
 function startNewTrack() {
-  if (!running) startTraining();
+    recordedPoints = [];
+    recordingTrack = true;
 
-  recordingTrack = true;
-  recordedPoints = [];
+    if (trackLine && map) {
+        map.removeLayer(trackLine);
+        trackLine = null;
+    }
 
-  if (trackLine) {
-    map.removeLayer(trackLine);
-    trackLine = null;
-  }
+    if (!running) {
+        startTraining();
+    }
 
-  gpsText.textContent = "🛣️ Optager ny bane...";
+    if (gpsText) {
+        gpsText.textContent =
+            "🛣️ Optager ny bane...";
+    }
 }
 
-startBtn?.addEventListener("click", startTraining);
-stopBtn?.addEventListener("click", stopTraining);
-saveStartBtn?.addEventListener("click", saveStartPoint);
-newTrackBtn?.addEventListener("click", startNewTrack);
+function addRecordedTrackPoint(lat, lng) {
+    const newPoint = [lat, lng];
 
-initMap();
-loadSavedStartPoint();
+    // Undgå næsten identiske GPS-punkter
+    if (recordedPoints.length > 0) {
+        const previousPoint =
+            recordedPoints[
+                recordedPoints.length - 1
+            ];
+
+        const distance = distanceBetween(
+            previousPoint[0],
+            previousPoint[1],
+            lat,
+            lng
+        );
+
+        if (distance < 1) {
+            return;
+        }
+    }
+
+    recordedPoints.push(newPoint);
+
+    if (!trackLine) {
+        trackLine = L.polyline(
+            recordedPoints,
+            {
+                weight: 6,
+                opacity: 0.85
+            }
+        ).addTo(map);
+    } else {
+        trackLine.setLatLngs(recordedPoints);
+    }
+}
+
+
+// ======================================
+// KNAPPER
+// ======================================
+
+if (startBtn) {
+    startBtn.addEventListener(
+        "click",
+        startTraining
+    );
+}
+
+if (stopBtn) {
+    stopBtn.addEventListener(
+        "click",
+        stopTraining
+    );
+}
+
+if (saveStartBtn) {
+    saveStartBtn.addEventListener(
+        "click",
+        saveStartPoint
+    );
+}
+
+if (newTrackBtn) {
+    newTrackBtn.addEventListener(
+        "click",
+        startNewTrack
+    );
+}
+
+
+// ======================================
+// START APPEN
+// ======================================
+
+try {
+    initMap();
+    loadSavedStartPoint();
+} catch (error) {
+    console.error(
+        "Appen kunne ikke starte:",
+        error
+    );
+
+    if (gpsText) {
+        gpsText.textContent =
+            "App-fejl – genindlæs siden";
+    }
+}
