@@ -250,9 +250,10 @@ function drawTrack(points) {
 function saveRecordedTrack() {
   try {
     localStorage.setItem(
-      TRACK_STORAGE_KEY,
-      JSON.stringify({ savedAt: Date.now(), points: recordedPoints })
-    );
+  "banetaeller_build005_track",
+  JSON.stringify(trackData)
+);
+
   } catch (error) {
     console.error("Kunne ikke gemme banen:", error);
     alert("Banen kunne ikke gemmes.");
@@ -261,8 +262,9 @@ function saveRecordedTrack() {
 
 function loadSavedTrack() {
   try {
-    const savedText = localStorage.getItem(TRACK_STORAGE_KEY);
-    if (!savedText) return;
+    const savedText = localStorage.getItem(
+  "banetaeller_build005_track"
+);
 
     const savedTrack = JSON.parse(savedText);
     if (!savedTrack || !Array.isArray(savedTrack.points)) return;
