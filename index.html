@@ -1,36 +1,19 @@
 <!DOCTYPE html>
 <html lang="da">
 <head>
-  <meta charset="UTF-8" />
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, viewport-fit=cover"
-  />
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Banetæller – Stafet For Livet</title>
-
-  <meta name="theme-color" content="#101820" />
-  <meta
-    name="description"
-    content="GPS-baseret omgangstæller til Stafet For Livet"
-  />
-
-  <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css" />
-
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  <meta name="theme-color" content="#101820">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
-
 <body>
   <main class="app">
-
     <header class="top">
       <h1>🏃 Banetæller</h1>
-      <p>Build002</p>
+      <p>Build003 – Baneoptagelse</p>
     </header>
 
     <section class="status-card">
@@ -44,27 +27,10 @@
     </section>
 
     <section class="stats">
-
-      <div class="stat-card">
-        <span>Omgange</span>
-        <strong id="laps">0</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Distance</span>
-        <strong id="distance">0,00 km</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Sidste omgang</span>
-        <strong id="lapTime">--:--</strong>
-      </div>
-
-      <div class="stat-card">
-        <span>Beløb</span>
-        <strong id="money">0 kr.</strong>
-      </div>
-
+      <div class="stat-card"><span>Omgange</span><strong id="laps">0</strong></div>
+      <div class="stat-card"><span>Distance</span><strong id="distance">0,00 km</strong></div>
+      <div class="stat-card"><span>Sidste omgang</span><strong id="lapTime">--:--</strong></div>
+      <div class="stat-card"><span>Beløb</span><strong id="money">0 kr.</strong></div>
     </section>
 
     <section class="map-section">
@@ -72,35 +38,14 @@
     </section>
 
     <section class="buttons">
-
-  <button id="startBtn" type="button">
-    ▶ START
-  </button>
-
-  <button id="newTrackBtn" type="button">
-    🛣️ NY BANE
-  </button>
-
-  <button id="saveStartBtn" type="button">
-    📍 GEM START/MÅL
-  </button>
-
-  <button id="stopBtn" type="button">
-    ■ STOP
-  </button>
-
-</section>
-
-      <button id="stopBtn" type="button">
-        ■ STOP
-      </button>
-
+      <button id="startBtn" type="button">▶ START</button>
+      <button id="newTrackBtn" type="button">🛣️ NY BANE</button>
+      <button id="saveStartBtn" type="button">📍 GEM START/MÅL</button>
+      <button id="stopBtn" type="button">■ STOP</button>
     </section>
-
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
   <script src="settings.js"></script>
   <script src="utils.js"></script>
   <script src="voice.js"></script>
