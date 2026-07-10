@@ -25,6 +25,17 @@ const stopBtn = document.getElementById("stopBtn");
 const saveStartBtn = document.getElementById("saveStartBtn");
 const newTrackBtn = document.getElementById("newTrackBtn");
 const tracksBtn = document.getElementById("tracksBtn");
+function updateTrackButton() {
+
+    if (!tracksBtn) return;
+
+    const count = getTrackCount();
+
+    tracksBtn.textContent =
+        "📚 BANEBIBLIOTEK (" + count + ")";
+
+}
+
 
 const gpsText = document.getElementById("gpsText");
 const startPointText = document.getElementById("startPointText");
@@ -424,6 +435,7 @@ function closeTrackLibrary() {
 }
 
 function renderTrackLibrary() {
+	updateTrackButton();
   const tracks = getTrackDatabase();
 
   trackList.innerHTML = "";
@@ -607,6 +619,8 @@ trackLibraryModal.addEventListener(
 
 initMap();
 loadSavedStartPoint();
+
+updateTrackButton();
 
 // Build006 starter uden automatisk blå bane.
 // Vælg en bane i Banebiblioteket.
