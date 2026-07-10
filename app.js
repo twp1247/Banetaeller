@@ -13,6 +13,10 @@ let timerInterval = null;
 let startPoint = null;
 let startMarker = null;
 
+let recordingTrack = false;
+let recordedPoints = [];
+let trackLine = null;
+
 // --------------------------------------
 // Elementer fra index.html
 // --------------------------------------
@@ -20,6 +24,7 @@ let startMarker = null;
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const saveStartBtn = document.getElementById("saveStartBtn");
+const newTrackBtn = document.getElementById("newTrackBtn");
 
 const gpsText = document.getElementById("gpsText");
 const savedStartText = document.getElementById("savedStartText");
@@ -234,6 +239,20 @@ function showStartMarker() {
     map.setView(position, 18);
 }
 
+function startNewTrack() {
+
+    recordingTrack = true;
+    recordedPoints = [];
+
+    if (trackLine) {
+        map.removeLayer(trackLine);
+        trackLine = null;
+    }
+
+    gpsText.textContent = "🛣️ Optager ny bane...";
+}
+
+
 // --------------------------------------
 // Hent gemt start/mål
 // --------------------------------------
@@ -317,6 +336,10 @@ if (saveStartBtn) {
     );
 }
 
+newTrackBtn.addEventListener(
+    "click",
+    startNewTrack
+    
 // --------------------------------------
 // Start appen
 // --------------------------------------
