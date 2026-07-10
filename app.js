@@ -11,6 +11,11 @@ const lapsElement=document.getElementById("laps");
 const distanceElement=document.getElementById("distance");
 const lapTimeElement=document.getElementById("lapTime");
 const moneyElement=document.getElementById("money");
+const saveStartBtn = document.getElementById("saveStartBtn");
+const savedStartText = document.getElementById("savedStartText");
+
+let startPoint = null;
+
 
 function initMap(){
   map=L.map("map").setView([54.9928,12.2830],18);
@@ -58,6 +63,30 @@ stopBtn.addEventListener("click",stopTraining);
 
 initMap();
 loadGPX();
+
+saveStartBtn.addEventListener("click", () => {
+  if (window.currentLat == null || window.currentLng == null) {
+    alert("GPS er ikke klar endnu.");
+    return;
+  }
+
+  startPoint = {
+    lat: window.currentLat,
+    lng: window.currentLng
+  };
+
+  localStorage.setItem("startPoint", JSON.stringify(startPoint));
+
+  savedStartText.innerText = "🏁 Start/mål gemt";
+});
+
+const savedStartPoint = localStorage.getItem("startPoint");
+
+if (savedStartPoint) {
+  startPoint = JSON.parse(savedStartPoint);
+  savedStartText.innerText = "🏁 Start/mål er gemt";
+}
+
 
 if("serviceWorker" in navigator){
   navigator.serviceWorker.register("sw.js").catch(console.error);

@@ -33,6 +33,8 @@ function resetGPS(){
 function onGPS(position){
   const lat=position.coords.latitude;
   const lng=position.coords.longitude;
+  window.currentLat = lat;
+window.currentLng = lng;
   const acc=position.coords.accuracy ?? 999;
 
   gpsText.innerText="GPS OK ±"+Math.round(acc)+" m";
