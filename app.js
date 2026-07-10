@@ -1,25 +1,18 @@
-// ======================================
-// BANETÆLLER
-// app.js
-// Build002 – Gem start/mål
-// ======================================
+// Banetæller Build003 – app.js
 
 let map = null;
-let running = false;
+let userMarker = null;
+let accuracyCircle = null;
+let startMarker = null;
 
+let running = false;
 let startTime = null;
 let timerInterval = null;
-
 let startPoint = null;
-let startMarker = null;
 
 let recordingTrack = false;
 let recordedPoints = [];
 let trackLine = null;
-
-// --------------------------------------
-// Elementer fra index.html
-// --------------------------------------
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
@@ -27,22 +20,18 @@ const saveStartBtn = document.getElementById("saveStartBtn");
 const newTrackBtn = document.getElementById("newTrackBtn");
 
 const gpsText = document.getElementById("gpsText");
-const savedStartText = document.getElementById("savedStartText");
-
+const startPointText = document.getElementById("startPointText");
 const timeElement = document.getElementById("time");
-const lapsElement = document.getElementById("laps");
 const distanceElement = document.getElementById("distance");
-const lapTimeElement = document.getElementById("lapTime");
-const moneyElement = document.getElementById("money");
-
-// --------------------------------------
-// Start kort
-// --------------------------------------
 
 function initMap() {
+    if (typeof L === "undefined") {
+        throw new Error("Leaflet blev ikke indlæst.");
+    }
+
     map = L.map("map").setView(
-        [54.9928, 12.2830],
-        18
+        [MAP_START.lat, MAP_START.lng],
+        MAP_START.zoom
     );
 
     L.tileLayer(
@@ -52,11 +41,58 @@ function initMap() {
             attribution: "&copy; OpenStreetMap"
         }
     ).addTo(map);
+
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 150);
 }
 
-// --------------------------------------
-// Start træning
-// --------------------------------------
+function updateGpsStatus(accuracy) {
+    gpsText.textContent =
+        "GPS OK ±" + Math.round(accuracy) + " m";
+}
+
+function showGpsError(error) {
+    if (error && error.code === 1) {
+        gpsText.textContent = "GPS-tilladelse mangler";
+    } else if (error && error.code === 2) {
+        gpsText.textContent = "GPS-position kan ikke findes";
+    } else if (error && error.code === 3) {
+        gpsText.textContent = "GPS bruger for lang tid";
+    } else {
+        gpsText.textContent = "GPS-fejl";
+    }
+}
+
+function updateUserMarker(lat, lng, accuracy) {
+    const position = [lat, lng];
+
+    if (userMarker) {
+        userMarker.setLatLng(position);
+    } else {
+        userMarker = L.marker(position, {
+            title: "Din position"
+        }).addTo(map);
+    }
+
+    if (accuracyCircle) {
+        accuracyCircle.setLatLng(position);
+        accuracyCircle.setRadius(accuracy);
+    } else {
+        accuracyCircle = L.circle(position, {
+            radius: accuracy,
+            weight: 1,
+            fillOpacity: 0.08
+        }).addTo(map);
+    }
+
+    map.setView(position, 18);
+}
+
+function updateDistanceDisplay(meters) {
+    distanceElement.textContent =
+        formatDistance(meters);
+}
 
 function startTraining() {
     if (running) {
@@ -66,59 +102,34 @@ function startTraining() {
     running = true;
     startTime = Date.now();
 
-    if (typeof resetGPS === "function") {
-        resetGPS();
-    }
-
-    if (typeof resetLapEngine === "function") {
-        resetLapEngine();
-    }
+    resetGPS();
+    startTimer();
 
     gpsText.textContent = "Starter GPS...";
 
-    startTimer();
-
-    if (typeof announceStart === "function") {
-        announceStart();
-    }
-
-    if (typeof startGPS === "function") {
-        startGPS();
-    }
+    startGPS();
+    announceStart();
 }
 
-// --------------------------------------
-// Stop træning
-// --------------------------------------
-
 function stopTraining() {
-    if (!running) {
+    if (!running && !recordingTrack) {
         return;
     }
 
     running = false;
+    recordingTrack = false;
 
     stopTimer();
-
-    if (typeof stopGPS === "function") {
-        stopGPS();
-    }
+    stopGPS();
 
     gpsText.textContent = "Stoppet";
-
-    if (typeof announceStop === "function") {
-        announceStop();
-    }
+    announceStop();
 }
-
-// --------------------------------------
-// Timer
-// --------------------------------------
 
 function startTimer() {
     stopTimer();
 
-    timerInterval = setInterval(() => {
+    timerInterval = window.setInterval(() => {
         if (!running || startTime === null) {
             return;
         }
@@ -127,35 +138,17 @@ function startTimer() {
             (Date.now() - startTime) / 1000
         );
 
-        if (typeof formatTime === "function") {
-            timeElement.textContent = formatTime(seconds);
-        } else {
-            const hours = Math.floor(seconds / 3600);
-            const minutes = Math.floor(
-                (seconds % 3600) / 60
-            );
-            const remainingSeconds = seconds % 60;
-
-            timeElement.textContent =
-                String(hours).padStart(2, "0") +
-                ":" +
-                String(minutes).padStart(2, "0") +
-                ":" +
-                String(remainingSeconds).padStart(2, "0");
-        }
+        timeElement.textContent =
+            formatTime(seconds);
     }, 1000);
 }
 
 function stopTimer() {
     if (timerInterval !== null) {
-        clearInterval(timerInterval);
+        window.clearInterval(timerInterval);
         timerInterval = null;
     }
 }
-
-// --------------------------------------
-// Gem start/mål
-// --------------------------------------
 
 function saveStartPoint() {
     const lat = Number(window.currentLat);
@@ -172,41 +165,23 @@ function saveStartPoint() {
         savedAt: Date.now()
     };
 
-    try {
-        localStorage.setItem(
-            "banetaellerStartPoint",
-            JSON.stringify(startPoint)
-        );
-    } catch (error) {
-        console.error(
-            "Kunne ikke gemme start/mål:",
-            error
-        );
-
-        alert("Start/mål kunne ikke gemmes.");
-        return;
-    }
+    saveJSON(
+        STORAGE_KEYS.START_POINT,
+        startPoint
+    );
 
     showStartMarker();
 
-    if (savedStartText) {
-        savedStartText.textContent =
-            "🏁 Start/mål er gemt";
-    }
+    startPointText.textContent =
+        "🏁 Start/mål er gemt";
 
-    if (typeof vibrate === "function") {
-        vibrate(250);
-    }
+    announceStartPointSaved();
 
     alert("Start/mål er gemt.");
 }
 
-// --------------------------------------
-// Vis start/mål på kortet
-// --------------------------------------
-
 function showStartMarker() {
-    if (!map || !startPoint) {
+    if (!startPoint || !map) {
         return;
     }
 
@@ -218,7 +193,7 @@ function showStartMarker() {
     if (startMarker) {
         startMarker.setLatLng(position);
     } else {
-        const startIcon = L.divIcon({
+        const icon = L.divIcon({
             className: "start-marker",
             html: "🏁",
             iconSize: [36, 36],
@@ -228,19 +203,51 @@ function showStartMarker() {
         startMarker = L.marker(
             position,
             {
-                icon: startIcon,
+                icon: icon,
                 title: "Start/mål"
             }
         ).addTo(map);
 
         startMarker.bindPopup("🏁 Start/mål");
     }
+}
 
-    map.setView(position, 18);
+function loadSavedStartPoint() {
+    const saved = loadJSON(
+        STORAGE_KEYS.START_POINT
+    );
+
+    if (!saved) {
+        startPointText.textContent =
+            "Intet start/mål gemt";
+        return;
+    }
+
+    const lat = Number(saved.lat);
+    const lng = Number(saved.lng);
+
+    if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng)
+    ) {
+        startPointText.textContent =
+            "Intet start/mål gemt";
+        return;
+    }
+
+    startPoint = {
+        lat: lat,
+        lng: lng,
+        savedAt: saved.savedAt ?? null
+    };
+
+    startPointText.textContent =
+        "🏁 Start/mål er gemt";
+
+    showStartMarker();
 }
 
 function startNewTrack() {
-
     recordingTrack = true;
     recordedPoints = [];
 
@@ -249,71 +256,9 @@ function startNewTrack() {
         trackLine = null;
     }
 
-    gpsText.textContent = "🛣️ Optager ny bane...";
+    gpsText.textContent =
+        "🛣️ Optager ny bane...";
 }
-
-
-// --------------------------------------
-// Hent gemt start/mål
-// --------------------------------------
-
-function loadSavedStartPoint() {
-    let savedValue = null;
-
-    try {
-        savedValue =
-            localStorage.getItem(
-                "banetaellerStartPoint"
-            ) ||
-            localStorage.getItem("startPoint");
-    } catch (error) {
-        console.error(
-            "Kunne ikke hente start/mål:",
-            error
-        );
-        return;
-    }
-
-    if (!savedValue) {
-        if (savedStartText) {
-            savedStartText.textContent =
-                "Intet startpunkt gemt";
-        }
-
-        return;
-    }
-
-    try {
-        const parsed = JSON.parse(savedValue);
-
-        if (
-            Number.isFinite(Number(parsed.lat)) &&
-            Number.isFinite(Number(parsed.lng))
-        ) {
-            startPoint = {
-                lat: Number(parsed.lat),
-                lng: Number(parsed.lng),
-                savedAt: parsed.savedAt || null
-            };
-
-            if (savedStartText) {
-                savedStartText.textContent =
-                    "🏁 Start/mål er gemt";
-            }
-
-            showStartMarker();
-        }
-    } catch (error) {
-        console.error(
-            "Ugyldigt gemt startpunkt:",
-            error
-        );
-    }
-}
-
-// --------------------------------------
-// Knapper
-// --------------------------------------
 
 if (startBtn) {
     startBtn.addEventListener(
@@ -336,42 +281,12 @@ if (saveStartBtn) {
     );
 }
 
-newTrackBtn.addEventListener(
-    "click",
-    startNewTrack
+if (newTrackBtn) {
+    newTrackBtn.addEventListener(
+        "click",
+        startNewTrack
     );
 }
 
-// --------------------------------------
-// Start appen
-// --------------------------------------
-
 initMap();
-
-if (typeof loadGPX === "function") {
-    loadGPX();
-}
-
 loadSavedStartPoint();
-
-// --------------------------------------
-// Service Worker
-// --------------------------------------
-
-if ("serviceWorker" in navigator) {
-    window.addEventListener("load", async () => {
-        try {
-            const registration =
-                await navigator.serviceWorker.register(
-                    "./sw.js"
-                );
-
-            registration.update();
-        } catch (error) {
-            console.error(
-                "Service Worker-fejl:",
-                error
-            );
-        }
-    });
-}
