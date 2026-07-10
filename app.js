@@ -14,7 +14,9 @@ const moneyElement=document.getElementById("money");
 const saveStartBtn = document.getElementById("saveStartBtn");
 const savedStartText = document.getElementById("savedStartText");
 
-let startPoint = null;
+let startPoint=null;
+let startMarker=null;
+
 
 
 function initMap(){
@@ -64,27 +66,48 @@ stopBtn.addEventListener("click",stopTraining);
 initMap();
 loadGPX();
 
-saveStartBtn.addEventListener("click", () => {
-  if (window.currentLat == null || window.currentLng == null) {
-    alert("GPS er ikke klar endnu.");
+saveStartBtn.addEventListener("click",()=>{
+
+  if(window.currentLat == null || window.currentLng == null){
+    alert("Tryk først START og vent, til GPS er klar.");
     return;
   }
 
-  startPoint = {
-    lat: window.currentLat,
-    lng: window.currentLng
+  startPoint={
+    lat:window.currentLat,
+    lng:window.currentLng
   };
 
-  localStorage.setItem("startPoint", JSON.stringify(startPoint));
+  localStorage.setItem(
+    "startPoint",
+    JSON.stringify(startPoint)
+  );
 
-  savedStartText.innerText = "🏁 Start/mål gemt";
+  if(startMarker){
+    startMarker.setLatLng([startPoint.lat,startPoint.lng]);
+  }else{
+    startMarker=L.marker(
+      [startPoint.lat,startPoint.lng],
+      {title:"Start/mål"}
+    ).addTo(map);
+  }
+
+  savedStartText.innerText="🏁 Start/mål gemt";
+  alert("Start/mål er gemt");
 });
 
-const savedStartPoint = localStorage.getItem("startPoint");
+const savedStartPoint=localStorage.getItem("startPoint");
 
-if (savedStartPoint) {
-  startPoint = JSON.parse(savedStartPoint);
-  savedStartText.innerText = "🏁 Start/mål er gemt";
+if(savedStartPoint){
+
+  startPoint=JSON.parse(savedStartPoint);
+
+  startMarker=L.marker(
+    [startPoint.lat,startPoint.lng],
+    {title:"Start/mål"}
+  ).addTo(map);
+
+  savedStartText.innerText="🏁 Start/mål er gemt";
 }
 
 
