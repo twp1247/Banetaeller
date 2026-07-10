@@ -63,6 +63,10 @@ function onGPSPosition(position) {
 
     lastGpsPoint = { lat, lng };
   }
+
+  if (typeof updateLapEngine === "function") {
+    updateLapEngine(lat, lng);
+  }
 }
 
 function onGPSError(error) {

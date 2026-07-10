@@ -108,6 +108,11 @@ function startTraining() {
   startTime = Date.now();
 
   resetGPS();
+
+  if (typeof resetLapEngine === "function") {
+    resetLapEngine();
+  }
+
   startTimer();
 
   gpsText.textContent = "Starter GPS...";

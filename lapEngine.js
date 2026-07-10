@@ -9,106 +9,84 @@ let lapArmed = false;
 let lapStartTime = null;
 
 function resetLapEngine() {
-    lapCount = 0;
-    lapArmed = false;
-    lapStartTime = null;
-
-    updateLapDisplay();
+  lapCount = 0;
+  lapArmed = false;
+  lapStartTime = null;
+  updateLapDisplay();
 }
 
 function updateLapEngine(lat, lng) {
-    if (!startPoint) {
-        return;
+  if (!startPoint) return;
+
+  const distanceToStart = distanceBetween(
+    lat,
+    lng,
+    startPoint.lat,
+    startPoint.lng
+  );
+
+  if (!lapArmed && distanceToStart >= LEAVE_START_DISTANCE) {
+    lapArmed = true;
+
+    if (lapStartTime === null) {
+      lapStartTime = Date.now();
     }
+  }
 
-    const distanceToStart = distanceBetween(
-        lat,
-        lng,
-        startPoint.lat,
-        startPoint.lng
-    );
-
-    // Brugeren skal først væk fra start/mål
-    // før en omgang kan tælles
-    if (
-        !lapArmed &&
-        distanceToStart >= LEAVE_START_DISTANCE
-    ) {
-        lapArmed = true;
-
-        if (lapStartTime === null) {
-            lapStartTime = Date.now();
-        }
-    }
-
-    // Når brugeren kommer tilbage til start/mål,
-    // tælles én omgang
-    if (
-        lapArmed &&
-        distanceToStart <= START_RADIUS
-    ) {
-        finishLap();
-    }
+  if (lapArmed && distanceToStart <= START_RADIUS) {
+    finishLap();
+  }
 }
 
 function finishLap() {
-    lapCount++;
+  lapCount++;
 
-    const now = Date.now();
+  const now = Date.now();
+  let lapSeconds = 0;
 
-    let lapSeconds = 0;
+  if (lapStartTime !== null) {
+    lapSeconds = Math.floor((now - lapStartTime) / 1000);
+  }
 
-    if (lapStartTime !== null) {
-        lapSeconds = Math.floor(
-            (now - lapStartTime) / 1000
-        );
-    }
+  lapArmed = false;
+  lapStartTime = now;
 
-    lapArmed = false;
-    lapStartTime = now;
+  updateLapDisplay(lapSeconds);
 
-    updateLapDisplay(lapSeconds);
+  if (typeof speak === "function") {
+    speak("Omgang " + lapCount + " gennemført");
+  }
+
+  if (typeof vibrate === "function") {
+    vibrate([120, 80, 120]);
+  }
 }
 
 function updateLapDisplay(lapSeconds = null) {
-    const lapsElement =
-        document.getElementById("laps");
+  const lapsElement = document.getElementById("laps");
+  const lapTimeElement = document.getElementById("lapTime");
+  const moneyElement = document.getElementById("money");
 
-    const lapTimeElement =
-        document.getElementById("lapTime");
+  if (lapsElement) {
+    lapsElement.textContent = lapCount;
+  }
 
-    const moneyElement =
-        document.getElementById("money");
+  if (lapTimeElement && lapSeconds !== null) {
+    lapTimeElement.textContent = formatLapTime(lapSeconds);
+  }
 
-    if (lapsElement) {
-        lapsElement.textContent = lapCount;
-    }
-
-    if (
-        lapTimeElement &&
-        lapSeconds !== null
-    ) {
-        lapTimeElement.textContent =
-            formatLapTime(lapSeconds);
-    }
-
-    if (moneyElement) {
-        moneyElement.textContent =
-            (lapCount * MONEY_PER_LAP) +
-            " kr.";
-    }
+  if (moneyElement) {
+    moneyElement.textContent = (lapCount * MONEY_PER_LAP) + " kr.";
+  }
 }
 
 function formatLapTime(totalSeconds) {
-    const minutes =
-        Math.floor(totalSeconds / 60);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
 
-    const seconds =
-        totalSeconds % 60;
-
-    return (
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0")
-    );
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+  );
 }
