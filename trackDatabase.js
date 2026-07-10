@@ -1,109 +1,86 @@
 // ======================================
 // BANETÆLLER
-// Build006
+// Build006 – Banedatabase
 // trackDatabase.js
 // ======================================
 
 function getTrackDatabase() {
+  try {
+    const json = localStorage.getItem(TRACK_DATABASE_KEY);
+    if (!json) return [];
 
-    try {
-
-        const json = localStorage.getItem(
-            TRACK_DATABASE_KEY
-        );
-
-        if (!json) {
-            return [];
-        }
-
-        const database = JSON.parse(json);
-
-        if (!Array.isArray(database)) {
-            return [];
-        }
-
-        return database;
-
-    } catch (error) {
-
-        console.error(
-            "Fejl ved læsning af banedatabase",
-            error
-        );
-
-        return [];
-    }
-
+    const database = JSON.parse(json);
+    return Array.isArray(database) ? database : [];
+  } catch (error) {
+    console.error("Fejl ved læsning af banedatabase:", error);
+    return [];
+  }
 }
 
 function saveTrackDatabase(database) {
+  localStorage.setItem(
+    TRACK_DATABASE_KEY,
+    JSON.stringify(database)
+  );
+}
 
-    localStorage.setItem(
-        TRACK_DATABASE_KEY,
-        JSON.stringify(database)
-    );
-
+function createTrackId() {
+  return (
+    Date.now().toString(36) +
+    "-" +
+    Math.random().toString(36).slice(2, 8)
+  );
 }
 
 function addTrack(track) {
+  const database = getTrackDatabase();
 
-    const database =
-        getTrackDatabase();
+  if (database.length >= MAX_TRACKS) {
+    throw new Error(
+      "Du kan højst gemme " + MAX_TRACKS + " baner."
+    );
+  }
 
-    database.push(track);
+  const savedTrack = {
+    id: track.id || createTrackId(),
+    name: track.name || "Unavngivet bane",
+    createdAt: track.createdAt || Date.now(),
+    points: Array.isArray(track.points) ? track.points : [],
+    startPoint: track.startPoint || null
+  };
 
-    saveTrackDatabase(database);
+  database.push(savedTrack);
+  saveTrackDatabase(database);
 
+  return savedTrack;
 }
 
 function getTrack(id) {
-
-    const database =
-        getTrackDatabase();
-
-    return database.find(
-        track => track.id === id
-    );
-
+  return getTrackDatabase().find(track => track.id === id) || null;
 }
 
 function deleteTrack(id) {
-
-    const database =
-        getTrackDatabase();
-
-    const newDatabase =
-        database.filter(
-            track => track.id !== id
-        );
-
-    saveTrackDatabase(newDatabase);
-
+  const database = getTrackDatabase();
+  const newDatabase = database.filter(track => track.id !== id);
+  saveTrackDatabase(newDatabase);
 }
 
-function updateTrack(id, newTrack) {
+function updateTrack(id, changes) {
+  const database = getTrackDatabase();
+  const index = database.findIndex(track => track.id === id);
 
-    const database =
-        getTrackDatabase();
+  if (index < 0) return null;
 
-    const index =
-        database.findIndex(
-            track => track.id === id
-        );
+  database[index] = {
+    ...database[index],
+    ...changes,
+    id: database[index].id
+  };
 
-    if (index >= 0) {
-
-        database[index] =
-            newTrack;
-
-        saveTrackDatabase(database);
-
-    }
-
+  saveTrackDatabase(database);
+  return database[index];
 }
 
 function getTrackCount() {
-
-    return getTrackDatabase().length;
-
+  return getTrackDatabase().length;
 }

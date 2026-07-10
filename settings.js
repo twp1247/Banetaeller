@@ -1,6 +1,6 @@
 // ======================================
 // BANETÆLLER
-// Build004
+// Build006 – Banebibliotek
 // settings.js
 // ======================================
 
@@ -27,12 +27,11 @@ const START_RADIUS = 8;
 const LEAVE_START_DISTANCE = 20;
 const MONEY_PER_LAP = 2;
 
-// Gemte baner
-const TRACK_STORAGE_KEY = "banetaeller_build005_track";
+// Banebibliotek
+const TRACK_DATABASE_KEY = "banetaeller_tracks";
+const TRACK_DATABASE_VERSION = 1;
+const MAX_TRACKS = 50;
 
-// ======================================
-// BUILD006
-// Banedatabase
 // ======================================
 
 // Database med alle baner

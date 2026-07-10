@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Banetæller – Stafet For Livet",
   "short_name": "Banetæller",
-  "description": "GPS-baseret omgangstæller til Stafet For Livet",
+  "description": "GPS-baseret omgangstæller med banebibliotek",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -10,4 +10,5 @@
   "theme_color": "#101820",
   "orientation": "portrait-primary",
   "lang": "da-DK"
+}"
 }

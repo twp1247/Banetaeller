@@ -130,3 +130,136 @@ button{
 #stopBtn{
     background:#d32f2f;
 }
+
+#tracksBtn {
+  background: #6f42c1;
+  color: #ffffff;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.68);
+}
+
+.modal-card {
+  position: relative;
+  width: min(100%, 700px);
+  max-height: 82vh;
+  overflow: auto;
+  padding: 18px;
+  border-radius: 22px 22px 0 0;
+  background: #162431;
+  color: #ffffff;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.35);
+}
+
+.modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 26px;
+}
+
+.modal-header p {
+  margin: 5px 0 0;
+  color: #bdc8d1;
+}
+
+.modal-close {
+  width: auto;
+  min-width: 48px;
+  padding: 10px 14px;
+  background: #334554;
+  color: white;
+}
+
+.track-list {
+  display: grid;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+
+.track-empty {
+  padding: 22px 14px;
+  border-radius: 14px;
+  background: #213342;
+  text-align: center;
+  color: #d9e1e7;
+}
+
+.track-card {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 14px;
+  background: #213342;
+}
+
+.track-main {
+  min-width: 0;
+}
+
+.track-name {
+  display: block;
+  font-size: 19px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.track-meta {
+  display: block;
+  margin-top: 5px;
+  color: #bdc8d1;
+  font-size: 14px;
+}
+
+.track-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-use,
+.track-delete {
+  width: auto;
+  padding: 11px 12px;
+  font-size: 15px;
+}
+
+.track-use {
+  background: #1976d2;
+}
+
+.track-delete {
+  background: #b3261e;
+}
+
+.library-new-btn {
+  background: #1976d2;
+  color: #ffffff;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
