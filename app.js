@@ -310,4 +310,4 @@ newTrackBtn.addEventListener("click", startNewTrack);
 
 initMap();
 loadSavedStartPoint();
-loadSavedTrack();
+
