@@ -339,7 +339,9 @@ if (saveStartBtn) {
 newTrackBtn.addEventListener(
     "click",
     startNewTrack
-    
+    );
+}
+
 // --------------------------------------
 // Start appen
 // --------------------------------------
