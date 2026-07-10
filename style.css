@@ -118,6 +118,11 @@ button{
     background:#28a745;
 }
 
+#newTrackBtn{
+    background:#1976d2;
+    color:white;
+}
+
 #saveStartBtn{
     background:#ff9800;
 }
