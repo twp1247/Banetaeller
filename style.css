@@ -1,22 +1,127 @@
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,Helvetica,sans-serif;background:#101820;color:#fff}
-.app{max-width:760px;margin:auto;padding:16px}
-.top{text-align:center;margin-bottom:16px}
-.top h1{font-size:32px;margin-bottom:4px}
-.top p{color:#b9c2cc}
-.status{background:#1d2a35;padding:14px;border-radius:12px;text-align:center;margin-bottom:16px;font-size:18px}
-.main-display{background:#23384d;border-radius:16px;padding:22px;text-align:center;margin-bottom:16px}
-.main-display .label{font-size:18px;margin-bottom:8px;color:#b9c2cc}
-#time{font-size:48px;font-weight:800;letter-spacing:1px}
-.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
-.card{background:#1d2a35;border-radius:12px;padding:14px;text-align:center}
-.card span{display:block;color:#b9c2cc;margin-bottom:8px}
-.card strong{font-size:24px}
-.map-section{margin-bottom:16px}
-#map{height:330px;border-radius:16px;overflow:hidden;border:2px solid #2d4152;background:#1d2a35}
-.buttons{display:flex;gap:12px;position:sticky;bottom:12px}
-button{flex:1;padding:18px;font-size:22px;border:none;border-radius:14px;cursor:pointer;font-weight:800}
-#startBtn{background:#1fa84a;color:white}
-#stopBtn{background:#d73a49;color:white}
-button:active{transform:scale(.98)}
-@media(max-width:520px){#time{font-size:40px}.card strong{font-size:20px}#map{height:280px}}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#101820;
+    color:white;
+}
+
+.app{
+    max-width:700px;
+    margin:auto;
+    padding:15px;
+}
+
+.top{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.top h1{
+    font-size:34px;
+}
+
+.top p{
+    color:#cccccc;
+}
+
+.status-card{
+    background:#1b2a38;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+#gpsText{
+    font-size:18px;
+    font-weight:bold;
+}
+
+#startPointText{
+    margin-top:8px;
+    color:#7CFC00;
+}
+
+.timer-card{
+    background:#1b2a38;
+    border-radius:12px;
+    padding:15px;
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.timer-card span{
+    display:block;
+    font-size:16px;
+}
+
+#time{
+    font-size:40px;
+    font-weight:bold;
+}
+
+.stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:15px;
+}
+
+.stat-card{
+    background:#1b2a38;
+    border-radius:12px;
+    padding:12px;
+    text-align:center;
+}
+
+.stat-card span{
+    display:block;
+    color:#bbbbbb;
+}
+
+.stat-card strong{
+    display:block;
+    margin-top:5px;
+    font-size:24px;
+}
+
+.map-section{
+    margin-bottom:15px;
+}
+
+#map{
+    height:320px;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.buttons{
+    display:grid;
+    gap:10px;
+}
+
+button{
+    border:none;
+    border-radius:12px;
+    padding:16px;
+    font-size:18px;
+    font-weight:bold;
+    color:white;
+}
+
+#startBtn{
+    background:#28a745;
+}
+
+#saveStartBtn{
+    background:#ff9800;
+}
+
+#stopBtn{
+    background:#d32f2f;
+}
