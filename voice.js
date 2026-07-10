@@ -1,12 +1,51 @@
-let voiceEnabled = SPEAK_ENABLED;
-function speak(text){
-  if(!voiceEnabled || !("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const msg=new SpeechSynthesisUtterance(text);
-  msg.lang="da-DK"; msg.rate=1; msg.pitch=1; msg.volume=1;
-  window.speechSynthesis.speak(msg);
+// ======================================
+// Banetæller
+// Build002
+// voice.js
+// ======================================
+
+function speak(text) {
+    if (!SPEAK) {
+        return;
+    }
+
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const message = new SpeechSynthesisUtterance(text);
+
+    message.lang = "da-DK";
+    message.rate = 1;
+    message.pitch = 1;
+    message.volume = 1;
+
+    window.speechSynthesis.speak(message);
 }
-function vibrate(ms=250){if(VIBRATE_ENABLED && navigator.vibrate) navigator.vibrate(ms);}
-function announceStart(){vibrate(150); speak("Træning startet");}
-function announceStop(){vibrate(150); speak("Træning stoppet");}
-function announceLap(lapNumber, lapTime){vibrate([150,80,150]); speak("Omgang "+lapNumber+" gennemført. Tid "+lapTime);}
+
+function vibrate(pattern = 250) {
+    if (!VIBRATE) {
+        return;
+    }
+
+    if ("vibrate" in navigator) {
+        navigator.vibrate(pattern);
+    }
+}
+
+function announceStart() {
+    vibrate(200);
+    speak("Træning startet");
+}
+
+function announceStop() {
+    vibrate(200);
+    speak("Træning stoppet");
+}
+
+function announceStartPointSaved() {
+    vibrate([150, 100, 150]);
+    speak("Start og mål er gemt");
+}
