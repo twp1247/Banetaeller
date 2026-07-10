@@ -110,8 +110,11 @@ function stopTraining() {
   stopGPS();
 
   if (wasRecordingTrack && recordedPoints.length >= 2) {
-    saveRecordedTrack();
-    gpsText.textContent = "Stoppet – bane gemt";
+    const trackWasSaved = saveRecordedTrack();
+
+    gpsText.textContent = trackWasSaved
+      ? "Stoppet – bane gemt"
+      : "Stoppet – banen blev ikke gemt";
   } else {
     gpsText.textContent = "Stoppet";
   }
@@ -249,22 +252,36 @@ function drawTrack(points) {
 
 function saveRecordedTrack() {
   try {
-    localStorage.setItem(
-  "banetaeller_build005_track",
-  JSON.stringify(trackData)
-);
+    const trackData = {
+      savedAt: Date.now(),
+      points: recordedPoints.map(point => [
+        Number(point[0]),
+        Number(point[1])
+      ])
+    };
 
+    localStorage.setItem(
+      "banetaeller_build005_track",
+      JSON.stringify(trackData)
+    );
+
+    return true;
   } catch (error) {
     console.error("Kunne ikke gemme banen:", error);
-    alert("Banen kunne ikke gemmes.");
+
+    alert(
+      "Banen kunne ikke gemmes.\n\nFejl: " +
+      (error && error.message ? error.message : String(error))
+    );
+
+    return false;
   }
 }
 
 function loadSavedTrack() {
   try {
-    const savedText = localStorage.getItem(
-  "banetaeller_build005_track"
-);
+    const savedText = localStorage.getItem("banetaeller_build005_track");
+    if (!savedText) return;
 
     const savedTrack = JSON.parse(savedText);
     if (!savedTrack || !Array.isArray(savedTrack.points)) return;
