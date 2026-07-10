@@ -70,7 +70,7 @@ function initMap() {
   );
 
   L.tileLayer(
-    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
       maxZoom: 22,
       attribution: "&copy; OpenStreetMap"
