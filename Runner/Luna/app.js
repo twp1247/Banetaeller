@@ -13,6 +13,8 @@ const moneyElement = document.getElementById("money");
 const lastLapElement = document.getElementById("lastLap");
 const averageLapElement = document.getElementById("averageLap");
 const lastThreeElement = document.getElementById("lastThree");
+const rewardOverlay = document.getElementById("rewardOverlay");
+const rewardLap = document.getElementById("rewardLap");
 
 const GPS_OPTIONS = {
   enableHighAccuracy: true,
@@ -172,6 +174,7 @@ async function loadStegeStartPoint() {
     startPoint = { lat, lng };
     trackReady = true;
     statusText.textContent = "Klar ved Stege-banen";
+    statusText.dataset.state = "ready";
   } catch (error) {
     console.error(error);
     trackReady = false;
@@ -200,6 +203,7 @@ function startRunner() {
   startBtn.disabled = true;
   stopBtn.disabled = false;
   statusText.textContent = "Starter GPS…";
+  statusText.dataset.state = "running";
 
   watchId = navigator.geolocation.watchPosition(
     handlePosition,
@@ -224,6 +228,7 @@ function stopRunner() {
   startBtn.disabled = false;
   stopBtn.disabled = true;
   statusText.textContent = "Stoppet";
+  statusText.dataset.state = "stopped";
 }
 
 function handlePosition(position) {
@@ -235,6 +240,7 @@ function handlePosition(position) {
 
   statusText.textContent =
     "GPS OK ±" + Math.round(accuracy) + " m";
+  statusText.dataset.state = "running";
 
   if (accuracy > MAX_GPS_ACCURACY) {
     return;
@@ -291,6 +297,21 @@ function updateLapEngine(lat, lng) {
   }
 }
 
+function showRewardAnimation() {
+  if (!rewardOverlay || !rewardLap) return;
+
+  rewardLap.textContent =
+    "Omgang " + lapCount;
+
+  rewardOverlay.classList.remove("show");
+  void rewardOverlay.offsetWidth;
+  rewardOverlay.classList.add("show");
+
+  window.setTimeout(() => {
+    rewardOverlay.classList.remove("show");
+  }, 1900);
+}
+
 function finishLap() {
   const now = Date.now();
 
@@ -309,6 +330,7 @@ function finishLap() {
   lapStartTime = now;
 
   updateLapStats();
+  showRewardAnimation();
 
   if (navigator.vibrate) {
     navigator.vibrate([150, 80, 150]);
@@ -352,5 +374,6 @@ window.addEventListener("pagehide", () => {
   }
 });
 
+statusText.dataset.state = "ready";
 updateLapStats();
 loadStegeStartPoint();

@@ -211,3 +211,102 @@ body {
     font-size: 19px;
   }
 }
+
+
+.team-name {
+  margin: 14px 0 6px;
+  color: #ffffff;
+  font-size: clamp(24px, 7vw, 38px);
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.status[data-state="ready"] {
+  color: #79d8ff;
+}
+
+.status[data-state="running"] {
+  color: #6ff58b;
+}
+
+.status[data-state="stopped"] {
+  color: #ff8f8f;
+}
+
+.btn-stop:disabled {
+  background: #59636b;
+  opacity: 0.5;
+}
+
+.stat-large strong {
+  font-size: clamp(64px, 18vw, 96px);
+}
+
+.stat-card:nth-child(3) strong {
+  font-size: clamp(42px, 11vw, 62px);
+}
+
+.reward-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.reward-overlay.show {
+  opacity: 1;
+}
+
+.reward-content {
+  text-align: center;
+  transform: translateY(80px) scale(0.65);
+  opacity: 0;
+}
+
+.reward-overlay.show .reward-content {
+  animation: rewardFly 1.8s ease-out forwards;
+}
+
+.reward-confetti {
+  font-size: 64px;
+}
+
+.reward-money {
+  font-size: clamp(56px, 16vw, 96px);
+  font-weight: 1000;
+  color: #ffe86b;
+  text-shadow:
+    0 4px 0 #c98b00,
+    0 8px 18px rgba(0, 0, 0, 0.45);
+}
+
+.reward-lap {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 900;
+  color: #ffffff;
+}
+
+@keyframes rewardFly {
+  0% {
+    transform: translateY(90px) scale(0.6) rotate(-6deg);
+    opacity: 0;
+  }
+  20% {
+    transform: translateY(0) scale(1.18) rotate(3deg);
+    opacity: 1;
+  }
+  70% {
+    transform: translateY(-10px) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120px) scale(0.9);
+    opacity: 0;
+  }
+}

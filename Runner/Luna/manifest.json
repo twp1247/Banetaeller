@@ -1,10 +1,10 @@
 {
-  "name": "Luna Runner – Stege",
-  "short_name": "Luna Runner",
+  "name": "Stafet For Livet – Luna",
+  "short_name": "Luna",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101820",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Lunas deltager-app med GPS, distance, omgange, tider og penge"
+  "description": "Lunas enkle Stafet For Livet-app med GPS, omgange og +2 kr.-animation"
 }
