@@ -483,22 +483,8 @@ name.textContent =
     useButton.type = "button";
     useButton.className = "track-use";
     useButton.textContent = "Vælg";
-    const favoriteButton = document.createElement("button");
-favoriteButton.type = "button";
-favoriteButton.className = "track-favorite";
 
-favoriteButton.textContent =
-    getFavoriteTrackId() === track.id
-        ? "⭐"
-        : "☆";
-
-favoriteButton.addEventListener("click", () => {
-    setFavoriteTrack(track.id);
-    renderTrackLibrary();
-});
-    
-    
-    useButton.addEventListener("click", () => {
+useButton.addEventListener("click", () => {
       selectTrack(track.id);
     });
     
@@ -512,11 +498,7 @@ favoriteButton.addEventListener("click", () => {
       deleteTrackFromLibrary(track.id, track.name);
     });
 
-    actions.append(
-    favoriteButton,
-    useButton,
-    deleteButton
-);
+    actions.append(useButton, deleteButton);
     card.append(main, actions);
     trackList.appendChild(card);
   });

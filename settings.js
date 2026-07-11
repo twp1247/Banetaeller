@@ -31,3 +31,14 @@ const MONEY_PER_LAP = 2;
 const TRACK_DATABASE_KEY = "banetaeller_tracks";
 const TRACK_DATABASE_VERSION = 1;
 const MAX_TRACKS = 50;
+
+// ======================================
+
+// Database med alle baner
+const TRACK_DATABASE_KEY = "banetaeller_tracks";
+
+// Maksimalt antal gemte baner
+const MAX_TRACKS = 50;
+
+// Versionsnummer på databasen
+const TRACK_DATABASE_VERSION = 1;
