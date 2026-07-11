@@ -1,10 +1,10 @@
 {
-  "name": "Luna – Team Winther Runner",
+  "name": "Luna Runner – GPS og distance",
   "short_name": "Luna Runner",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101820",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Enkel deltager-app til Luna under Stafet For Livet"
+  "description": "Lunas enkle deltager-app med GPS og distance"
 }
