@@ -1,0 +1,10 @@
+{
+  "name": "Banetæller – Stege",
+  "short_name": "Banetæller",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#101820",
+  "theme_color": "#101820",
+  "orientation": "portrait",
+  "description": "Stabil GPS-baseret omgangstæller til Stege-banen"
+}
