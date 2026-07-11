@@ -483,9 +483,26 @@ name.textContent =
     useButton.type = "button";
     useButton.className = "track-use";
     useButton.textContent = "Vælg";
+    const favoriteButton = document.createElement("button");
+favoriteButton.type = "button";
+favoriteButton.className = "track-favorite";
+
+favoriteButton.textContent =
+    getFavoriteTrackId() === track.id
+        ? "⭐"
+        : "☆";
+
+favoriteButton.addEventListener("click", () => {
+    setFavoriteTrack(track.id);
+    renderTrackLibrary();
+});
+    
+    
     useButton.addEventListener("click", () => {
       selectTrack(track.id);
     });
+    
+    
 
     const deleteButton = document.createElement("button");
     deleteButton.type = "button";
@@ -495,7 +512,11 @@ name.textContent =
       deleteTrackFromLibrary(track.id, track.name);
     });
 
-    actions.append(useButton, deleteButton);
+    actions.append(
+    favoriteButton,
+    useButton,
+    deleteButton
+);
     card.append(main, actions);
     trackList.appendChild(card);
   });
