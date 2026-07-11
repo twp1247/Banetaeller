@@ -84,3 +84,39 @@ function updateTrack(id, changes) {
 function getTrackCount() {
   return getTrackDatabase().length;
 }
+
+// ======================================
+// FAVORITBANE
+// ======================================
+
+const FAVORITE_TRACK_KEY =
+  "banetaeller_favorite_track";
+
+function getFavoriteTrackId() {
+  return localStorage.getItem(
+    FAVORITE_TRACK_KEY
+  );
+}
+
+function setFavoriteTrack(id) {
+  localStorage.setItem(
+    FAVORITE_TRACK_KEY,
+    id
+  );
+}
+
+function clearFavoriteTrack() {
+  localStorage.removeItem(
+    FAVORITE_TRACK_KEY
+  );
+}
+
+function getFavoriteTrack() {
+  const id = getFavoriteTrackId();
+
+  if (!id) {
+    return null;
+  }
+
+  return getTrack(id);
+}
