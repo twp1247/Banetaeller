@@ -1,10 +1,10 @@
 {
-  "name": "Luna Runner – GPS og distance",
+  "name": "Luna Runner – Stege",
   "short_name": "Luna Runner",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101820",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Lunas enkle deltager-app med GPS og distance"
+  "description": "Lunas deltager-app med GPS, distance, omgange, tider og penge"
 }

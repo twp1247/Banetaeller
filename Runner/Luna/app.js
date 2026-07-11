@@ -1,12 +1,18 @@
 // ======================================
 // TEAM WINTHER RUNNER
-// Luna v0.2 – GPS og distance
+// Luna v0.3 – GPS, distance og omgange
 // ======================================
 
 const startBtn = document.getElementById("startBtn");
 const stopBtn = document.getElementById("stopBtn");
 const statusText = document.getElementById("statusText");
+
+const lapsElement = document.getElementById("laps");
 const distanceElement = document.getElementById("distance");
+const moneyElement = document.getElementById("money");
+const lastLapElement = document.getElementById("lastLap");
+const averageLapElement = document.getElementById("averageLap");
+const lastThreeElement = document.getElementById("lastThree");
 
 const GPS_OPTIONS = {
   enableHighAccuracy: true,
@@ -18,10 +24,23 @@ const MAX_GPS_ACCURACY = 35;
 const MAX_GPS_JUMP = 50;
 const MIN_GPS_MOVEMENT = 1;
 
+const START_RADIUS = 8;
+const LEAVE_START_DISTANCE = 20;
+const MONEY_PER_LAP = 2;
+
 let running = false;
 let watchId = null;
+
 let lastPosition = null;
 let totalDistanceMeters = 0;
+
+let startPoint = null;
+let trackReady = false;
+
+let lapCount = 0;
+let lapArmed = false;
+let lapStartTime = null;
+let lapTimes = [];
 
 function distanceBetween(lat1, lng1, lat2, lng2) {
   const earthRadius = 6371000;
@@ -48,13 +67,126 @@ function formatDistance(meters) {
     .replace(".", ",") + " km";
 }
 
+function formatLapTime(totalSeconds) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return (
+    String(minutes).padStart(2, "0") +
+    ":" +
+    String(seconds).padStart(2, "0")
+  );
+}
+
 function updateDistance() {
   distanceElement.textContent =
     formatDistance(totalDistanceMeters);
 }
 
+function updateLapStats() {
+  lapsElement.textContent = lapCount;
+  moneyElement.textContent =
+    (lapCount * MONEY_PER_LAP) + " kr.";
+
+  if (lapTimes.length === 0) {
+    lastLapElement.textContent = "--:--";
+    averageLapElement.textContent = "--:--";
+  } else {
+    const lastLap = lapTimes[lapTimes.length - 1];
+    const average = Math.round(
+      lapTimes.reduce((sum, value) => sum + value, 0) /
+      lapTimes.length
+    );
+
+    lastLapElement.textContent =
+      formatLapTime(lastLap);
+
+    averageLapElement.textContent =
+      formatLapTime(average);
+  }
+
+  const latestThree = lapTimes.slice(-3).reverse();
+
+  lastThreeElement.innerHTML = "";
+
+  for (let index = 0; index < 3; index++) {
+    const item = document.createElement("li");
+
+    item.textContent =
+      latestThree[index] !== undefined
+        ? formatLapTime(latestThree[index])
+        : "--:--";
+
+    lastThreeElement.appendChild(item);
+  }
+}
+
+function resetSession() {
+  lastPosition = null;
+  totalDistanceMeters = 0;
+
+  lapCount = 0;
+  lapArmed = false;
+  lapStartTime = null;
+  lapTimes = [];
+
+  updateDistance();
+  updateLapStats();
+}
+
+async function loadStegeStartPoint() {
+  try {
+    const response = await fetch(
+      "banen.gpx?v=luna-v03",
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("Stege-banen kunne ikke hentes.");
+    }
+
+    const xmlText = await response.text();
+    const xml = new DOMParser().parseFromString(
+      xmlText,
+      "application/xml"
+    );
+
+    if (xml.querySelector("parsererror")) {
+      throw new Error("Stege-banens GPX-fil kunne ikke læses.");
+    }
+
+    const firstPoint =
+      xml.getElementsByTagNameNS("*", "trkpt")[0];
+
+    if (!firstPoint) {
+      throw new Error("Stege-banen mangler startpunkt.");
+    }
+
+    const lat = Number(firstPoint.getAttribute("lat"));
+    const lng = Number(firstPoint.getAttribute("lon"));
+
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+      throw new Error("Stege-banens startpunkt er ugyldigt.");
+    }
+
+    startPoint = { lat, lng };
+    trackReady = true;
+    statusText.textContent = "Klar ved Stege-banen";
+  } catch (error) {
+    console.error(error);
+    trackReady = false;
+    statusText.textContent = "Stege-banen kunne ikke indlæses";
+  }
+}
+
 function startRunner() {
   if (running) return;
+
+  if (!trackReady || !startPoint) {
+    statusText.textContent =
+      "Vent – Stege-banen indlæses";
+    return;
+  }
 
   if (!navigator.geolocation) {
     statusText.textContent =
@@ -63,9 +195,7 @@ function startRunner() {
   }
 
   running = true;
-  lastPosition = null;
-  totalDistanceMeters = 0;
-  updateDistance();
+  resetSession();
 
   startBtn.disabled = true;
   stopBtn.disabled = false;
@@ -89,6 +219,8 @@ function stopRunner() {
   }
 
   lastPosition = null;
+  lapArmed = false;
+
   startBtn.disabled = false;
   stopBtn.disabled = true;
   statusText.textContent = "Stoppet";
@@ -126,6 +258,72 @@ function handlePosition(position) {
   }
 
   lastPosition = { lat, lng };
+
+  updateLapEngine(lat, lng);
+}
+
+function updateLapEngine(lat, lng) {
+  if (!startPoint || !running) return;
+
+  const distanceToStart = distanceBetween(
+    lat,
+    lng,
+    startPoint.lat,
+    startPoint.lng
+  );
+
+  if (
+    !lapArmed &&
+    distanceToStart >= LEAVE_START_DISTANCE
+  ) {
+    lapArmed = true;
+
+    if (lapStartTime === null) {
+      lapStartTime = Date.now();
+    }
+  }
+
+  if (
+    lapArmed &&
+    distanceToStart <= START_RADIUS
+  ) {
+    finishLap();
+  }
+}
+
+function finishLap() {
+  const now = Date.now();
+
+  const lapSeconds =
+    lapStartTime === null
+      ? 0
+      : Math.max(
+          1,
+          Math.floor((now - lapStartTime) / 1000)
+        );
+
+  lapCount += 1;
+  lapTimes.push(lapSeconds);
+
+  lapArmed = false;
+  lapStartTime = now;
+
+  updateLapStats();
+
+  if (navigator.vibrate) {
+    navigator.vibrate([150, 80, 150]);
+  }
+
+  if ("speechSynthesis" in window) {
+    window.speechSynthesis.cancel();
+
+    const message = new SpeechSynthesisUtterance(
+      "Omgang " + lapCount + " gennemført"
+    );
+
+    message.lang = "da-DK";
+    window.speechSynthesis.speak(message);
+  }
 }
 
 function handleGpsError(error) {
@@ -153,3 +351,6 @@ window.addEventListener("pagehide", () => {
     navigator.geolocation.clearWatch(watchId);
   }
 });
+
+updateLapStats();
+loadStegeStartPoint();
