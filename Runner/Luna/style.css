@@ -1,0 +1,213 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  --background: #101820;
+  --card: #1b2d3d;
+  --card-soft: #22384b;
+  --text: #ffffff;
+  --muted: #bfc9d1;
+  --green: #20ae49;
+  --red: #d92f2f;
+  --accent: #79d8ff;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background:
+    radial-gradient(circle at top, #1c3446 0, var(--background) 42%);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  padding: 18px 14px 32px;
+}
+
+.runner-app {
+  width: min(100%, 680px);
+  margin: 0 auto;
+}
+
+.profile {
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+.profile-photo {
+  width: 148px;
+  height: 148px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 6px solid #ffffff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.team-name {
+  margin: 14px 0 4px;
+  color: var(--muted);
+  font-size: 16px;
+}
+
+.profile h1 {
+  margin: 0;
+  font-size: clamp(42px, 12vw, 70px);
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.status {
+  margin: 10px 0 0;
+  color: var(--accent);
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.controls {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.btn {
+  width: 100%;
+  border: 0;
+  border-radius: 18px;
+  padding: 23px 18px;
+  color: white;
+  font-size: 28px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+}
+
+.btn-start {
+  background: var(--green);
+}
+
+.btn-stop {
+  background: var(--red);
+}
+
+.btn:disabled {
+  opacity: 0.42;
+  cursor: default;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-card {
+  min-height: 118px;
+  padding: 17px 12px;
+  border-radius: 18px;
+  background: var(--card);
+  text-align: center;
+}
+
+.stat-large {
+  grid-column: 1 / -1;
+}
+
+.stat-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 19px;
+}
+
+.stat-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(32px, 8vw, 48px);
+}
+
+.stat-large strong {
+  font-size: clamp(54px, 15vw, 82px);
+}
+
+.lap-history,
+.team-board {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 18px;
+  background: var(--card);
+}
+
+.lap-history h2,
+.team-board h2 {
+  margin: 0 0 14px;
+  font-size: 23px;
+}
+
+#lastThree {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#lastThree li {
+  padding: 14px 8px;
+  border-radius: 13px;
+  background: var(--card-soft);
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.team-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 2px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 22px;
+}
+
+.team-row:last-child {
+  border-bottom: 0;
+}
+
+.team-row strong {
+  font-size: 28px;
+}
+
+.version {
+  margin: 18px 0 0;
+  color: #8796a1;
+  text-align: center;
+  font-size: 13px;
+}
+
+@media (max-width: 430px) {
+  body {
+    padding: 12px 10px 28px;
+  }
+
+  .profile-photo {
+    width: 124px;
+    height: 124px;
+  }
+
+  .btn {
+    padding: 19px 14px;
+    font-size: 24px;
+  }
+
+  .stat-card {
+    min-height: 105px;
+  }
+
+  #lastThree li {
+    font-size: 19px;
+  }
+}

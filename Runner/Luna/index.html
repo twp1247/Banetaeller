@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Luna – Team Winther Runner</title>
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="Enkel deltager-app til Luna under Stafet For Livet">
 
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="runner-app">
+    <header class="profile">
+      <img src="luna.jpg" alt="Luna" class="profile-photo">
+      <p class="team-name">Team Winther · Stafet For Livet</p>
+      <h1>LUNA</h1>
+      <p id="statusText" class="status">Klar til start</p>
+    </header>
+
+    <section class="controls" aria-label="Start og stop">
+      <button id="startBtn" class="btn btn-start" type="button">▶ START</button>
+      <button id="stopBtn" class="btn btn-stop" type="button" disabled>■ STOP</button>
+    </section>
+
+    <section class="stats" aria-label="Lunas statistik">
+      <article class="stat-card stat-large">
+        <span>🏁 Mine omgange</span>
+        <strong id="laps">0</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>📏 Distance</span>
+        <strong id="distance">0,00 km</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>💰 Penge</span>
+        <strong id="money">0 kr.</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>⏱ Sidste omgang</span>
+        <strong id="lastLap">--:--</strong>
+      </article>
+
+      <article class="stat-card">
+        <span>📊 Gennemsnit</span>
+        <strong id="averageLap">--:--</strong>
+      </article>
+    </section>
+
+    <section class="lap-history">
+      <h2>🕒 Sidste 3 omgange</h2>
+      <ol id="lastThree">
+        <li>--:--</li>
+        <li>--:--</li>
+        <li>--:--</li>
+      </ol>
+    </section>
+
+    <section class="team-board">
+      <h2>Holdets omgange</h2>
+
+      <div class="team-row">
+        <span>Thomas</span>
+        <strong id="thomasLaps">0</strong>
+      </div>
+
+      <div class="team-row">
+        <span>Anette</span>
+        <strong id="anetteLaps">0</strong>
+      </div>
+
+      <div class="team-row">
+        <span>Emil</span>
+        <strong id="emilLaps">0</strong>
+      </div>
+    </section>
+
+    <p class="version">Runner v0.1 · Luna design</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
