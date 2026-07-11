@@ -1,6 +1,6 @@
 // ======================================
 // BANETÆLLER
-// Build007 – Favoritbane
+// Build006 – Banebibliotek
 // app.js
 // ======================================
 
@@ -452,14 +452,7 @@ function renderTrackLibrary() {
 
     const name = document.createElement("span");
     name.className = "track-name";
-
-    const isFavorite =
-      typeof getFavoriteTrackId === "function" &&
-      getFavoriteTrackId() === track.id;
-
-    name.textContent = isFavorite
-      ? "⭐ 🏃 " + track.name
-      : "🏃 " + track.name;
+    name.textContent = "🏃 " + track.name;
 
     const meta = document.createElement("span");
     meta.className = "track-meta";
@@ -480,21 +473,6 @@ function renderTrackLibrary() {
     const actions = document.createElement("div");
     actions.className = "track-actions";
 
-    const favoriteButton = document.createElement("button");
-    favoriteButton.type = "button";
-    favoriteButton.className = "track-favorite";
-    favoriteButton.textContent = isFavorite ? "⭐" : "☆";
-    favoriteButton.title = isFavorite
-      ? "Favoritbane"
-      : "Gør til favorit";
-
-    favoriteButton.addEventListener("click", () => {
-      if (typeof setFavoriteTrack === "function") {
-        setFavoriteTrack(track.id);
-        renderTrackLibrary();
-      }
-    });
-
     const useButton = document.createElement("button");
     useButton.type = "button";
     useButton.className = "track-use";
@@ -511,7 +489,7 @@ function renderTrackLibrary() {
       deleteTrackFromLibrary(track.id, track.name);
     });
 
-    actions.append(favoriteButton, useButton, deleteButton);
+    actions.append(useButton, deleteButton);
     card.append(main, actions);
     trackList.appendChild(card);
   });
@@ -629,6 +607,157 @@ trackLibraryModal.addEventListener(
 
 initMap();
 loadSavedStartPoint();
+
+// Build006 starter uden automatisk blå bane.
+// Vælg en bane i Banebiblioteket.
+ck(recordedPoints);
+
+  if (track.startPoint) {
+    const lat =
+      Number(track.startPoint.lat);
+
+    const lng =
+      Number(track.startPoint.lng);
+
+    if (
+      Number.isFinite(lat) &&
+      Number.isFinite(lng)
+    ) {
+      startPoint = {
+        lat,
+        lng,
+        savedAt:
+          track.startPoint.savedAt ||
+          Date.now()
+      };
+
+      localStorage.setItem(
+        "banetaeller_startpoint",
+        JSON.stringify(startPoint)
+      );
+
+      showStartMarker();
+
+      if (startPointText) {
+        startPointText.textContent =
+          "🏁 Start/mål er gemt";
+      }
+    }
+  }
+
+  const bounds =
+    trackLine.getBounds();
+
+  if (bounds.isValid()) {
+    map.fitBounds(bounds, {
+      padding: [25, 25]
+    });
+  }
+
+  if (gpsText) {
+    gpsText.textContent =
+      "Valgt bane: " + track.name;
+  }
+
+  closeTrackLibrary();
+}
+
+function deleteTrackFromLibrary(
+  id,
+  name
+) {
+  const confirmed = window.confirm(
+    'Vil du slette banen "' +
+    name +
+    '"?'
+  );
+
+  if (!confirmed) return;
+
+  if (typeof deleteTrack === "function") {
+    deleteTrack(id);
+  }
+
+  if (selectedTrackId === id) {
+    selectedTrackId = null;
+    recordedPoints = [];
+    clearTrackLine();
+  }
+
+  renderTrackLibrary();
+  updateTrackButton();
+}
+
+if (startBtn) {
+  startBtn.addEventListener(
+    "click",
+    startTraining
+  );
+}
+
+if (stopBtn) {
+  stopBtn.addEventListener(
+    "click",
+    stopTraining
+  );
+}
+
+if (saveStartBtn) {
+  saveStartBtn.addEventListener(
+    "click",
+    saveStartPoint
+  );
+}
+
+if (newTrackBtn) {
+  newTrackBtn.addEventListener(
+    "click",
+    startNewTrack
+  );
+}
+
+if (tracksBtn) {
+  tracksBtn.addEventListener(
+    "click",
+    openTrackLibrary
+  );
+}
+
+if (closeLibraryBtn) {
+  closeLibraryBtn.addEventListener(
+    "click",
+    closeTrackLibrary
+  );
+}
+
+if (libraryNewTrackBtn) {
+  libraryNewTrackBtn.addEventListener(
+    "click",
+    () => {
+      closeTrackLibrary();
+      startNewTrack();
+    }
+  );
+}
+
+if (trackLibraryModal) {
+  trackLibraryModal.addEventListener(
+    "click",
+    event => {
+      if (
+        event.target.hasAttribute(
+          "data-close-library"
+        )
+      ) {
+        closeTrackLibrary();
+      }
+    }
+  );
+}
+
+initMap();
+loadSavedStartPoint();
+updateTrackButton();
 
 // Build006 starter uden automatisk blå bane.
 // Vælg en bane i Banebiblioteket.

@@ -263,13 +263,3 @@ button{
 body.modal-open {
   overflow: hidden;
 }
-
-
-.track-favorite {
-  width: auto;
-  min-width: 48px;
-  padding: 11px 12px;
-  background: #f1c40f;
-  color: #1b1b1b;
-  font-size: 20px;
-}
