@@ -1,10 +1,10 @@
 {
-  "name": "Stafet For Livet – Luna",
+  "name": "Stafet For Livet – Luna Build 013",
   "short_name": "Luna",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#101820",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Lunas enkle Stafet For Livet-app med GPS, omgange og +2 kr.-animation"
+  "description": "Luna-app med fælles start/mål fra Admin"
 }
