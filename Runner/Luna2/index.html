@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Luna 2 – GPS Debug</title>
+  <meta name="theme-color" content="#101820">
+  <meta name="description" content="GPS-testside med fire checkpoints til Stafet For Livet">
+
+  <link rel="stylesheet" href="style.css?v=15">
+</head>
+<body>
+  <main class="debug-app">
+    <header class="top">
+      <img src="luna.jpg" alt="Luna" class="avatar">
+      <div>
+        <p class="eyebrow">STAFET FOR LIVET</p>
+        <h1>LUNA 2 · GPS DEBUG</h1>
+        <p id="systemStatus" class="system-status">Indlæser startpunkt og bane…</p>
+      </div>
+    </header>
+
+    <section class="controls">
+      <button id="startBtn" class="start" type="button" disabled>▶ START TEST</button>
+      <button id="stopBtn" class="stop" type="button" disabled>■ STOP TEST</button>
+      <button id="resetBtn" class="reset" type="button">↻ NULSTIL DATA</button>
+    </section>
+
+    <section class="checkpoint-panel">
+      <div class="panel-title">
+        <h2>4 checkpoints</h2>
+        <strong id="nextCheckpoint">Næste: —</strong>
+      </div>
+
+      <div class="checkpoint-grid">
+        <article id="cp1Card" class="checkpoint-card">
+          <span>1 · START/MÅL</span>
+          <strong id="cp1State">Venter</strong>
+          <small id="cp1Distance">—</small>
+        </article>
+
+        <article id="cp2Card" class="checkpoint-card">
+          <span>2 · FØRSTE SVING</span>
+          <strong id="cp2State">Venter</strong>
+          <small id="cp2Distance">—</small>
+        </article>
+
+        <article id="cp3Card" class="checkpoint-card">
+          <span>3 · MODSATTE SIDE</span>
+          <strong id="cp3State">Venter</strong>
+          <small id="cp3Distance">—</small>
+        </article>
+
+        <article id="cp4Card" class="checkpoint-card">
+          <span>4 · ANDET SVING</span>
+          <strong id="cp4State">Venter</strong>
+          <small id="cp4Distance">—</small>
+        </article>
+      </div>
+    </section>
+
+    <section class="data-grid">
+      <article class="data-card">
+        <span>GPS-status</span>
+        <strong id="gpsStatus">Ikke startet</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Nøjagtighed</span>
+        <strong id="accuracy">—</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Latitude</span>
+        <strong id="latitude">—</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Longitude</span>
+        <strong id="longitude">—</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Sidste afstand</span>
+        <strong id="lastMove">—</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Hastighed</span>
+        <strong id="speed">—</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Accepteret distance</span>
+        <strong id="acceptedDistance">0 m</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Rå distance</span>
+        <strong id="rawDistance">0 m</strong>
+      </article>
+
+      <article class="data-card">
+        <span>GPS-opdateringer</span>
+        <strong id="gpsUpdates">0</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Accepterede punkter</span>
+        <strong id="acceptedPoints">0</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Afviste punkter</span>
+        <strong id="rejectedPoints">0</strong>
+      </article>
+
+      <article class="data-card">
+        <span>Sidste afvisning</span>
+        <strong id="rejectReason">Ingen</strong>
+      </article>
+
+      <article class="data-card wide">
+        <span>Sidste GPS-tid</span>
+        <strong id="lastTimestamp">—</strong>
+      </article>
+
+      <article class="data-card wide">
+        <span>Checkpoint-forløb</span>
+        <strong id="checkpointLog">Ingen checkpoints registreret</strong>
+      </article>
+    </section>
+
+    <section class="notes">
+      <h2>Test-regler</h2>
+      <p>
+        En omgang er kun teknisk godkendt, når punkt 1 → 2 → 3 → 4 → 1
+        registreres i den rækkefølge.
+      </p>
+      <p>
+        Denne side viser kun rå testdata. Ingen penge, tider eller normal
+        Luna-visning.
+      </p>
+    </section>
+
+    <p class="version">Luna 2 · Build 015 · GPS/Checkpoint-test</p>
+  </main>
+
+  <script src="app15.js"></script>
+</body>
+</html>

@@ -1,0 +1,226 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #0d141b;
+  --panel: #162431;
+  --panel2: #1d3142;
+  --text: #ffffff;
+  --muted: #b9c6cf;
+  --green: #26c65b;
+  --red: #e14242;
+  --orange: #ff9f1c;
+  --blue: #34a6ff;
+  --grey: #5d6972;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: linear-gradient(180deg, #132331 0, var(--bg) 35%);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+body {
+  padding: 12px 10px 28px;
+}
+
+.debug-app {
+  width: min(100%, 820px);
+  margin: 0 auto;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.avatar {
+  width: 86px;
+  height: 86px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #ffffff;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: #8fdcff;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+h1 {
+  margin: 0;
+  font-size: clamp(25px, 7vw, 46px);
+}
+
+.system-status {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+button {
+  border: 0;
+  border-radius: 15px;
+  padding: 18px 12px;
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+}
+
+button:disabled {
+  opacity: 0.4;
+}
+
+.start {
+  background: var(--green);
+}
+
+.stop {
+  background: var(--red);
+}
+
+.reset {
+  grid-column: 1 / -1;
+  background: var(--grey);
+}
+
+.checkpoint-panel,
+.notes {
+  padding: 15px;
+  border-radius: 18px;
+  background: var(--panel);
+  margin-bottom: 14px;
+}
+
+.panel-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.panel-title h2,
+.notes h2 {
+  margin: 0;
+}
+
+#nextCheckpoint {
+  color: #ffe27a;
+}
+
+.checkpoint-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.checkpoint-card {
+  min-height: 114px;
+  padding: 13px;
+  border-radius: 14px;
+  background: var(--panel2);
+  border: 2px solid transparent;
+}
+
+.checkpoint-card span,
+.data-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.checkpoint-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 24px;
+}
+
+.checkpoint-card small {
+  display: block;
+  margin-top: 7px;
+  color: #9ddcff;
+  font-size: 16px;
+}
+
+.checkpoint-card.next {
+  border-color: var(--orange);
+}
+
+.checkpoint-card.hit {
+  border-color: var(--green);
+  background: #173a29;
+}
+
+.data-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.data-card {
+  min-height: 94px;
+  padding: 12px;
+  border-radius: 14px;
+  background: var(--panel);
+  overflow-wrap: anywhere;
+}
+
+.data-card strong {
+  display: block;
+  margin-top: 8px;
+  font-size: 20px;
+}
+
+.data-card.wide {
+  grid-column: 1 / -1;
+}
+
+.notes {
+  margin-top: 14px;
+  color: #d7e0e6;
+  line-height: 1.45;
+}
+
+.version {
+  text-align: center;
+  color: #7f8e99;
+  font-size: 13px;
+}
+
+@media (max-width: 430px) {
+  .avatar {
+    width: 72px;
+    height: 72px;
+  }
+
+  button {
+    font-size: 18px;
+    padding: 16px 10px;
+  }
+
+  .checkpoint-card strong {
+    font-size: 21px;
+  }
+
+  .data-card strong {
+    font-size: 18px;
+  }
+}
