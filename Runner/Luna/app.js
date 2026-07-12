@@ -351,24 +351,3 @@ window.addEventListener("pagehide", () => {
 statusText.dataset.state = "ready";
 updateLapStats();
 loadSharedStartPoint();
-
-  } else if (error.code === 3) {
-    statusText.textContent =
-      "GPS bruger for lang tid";
-  } else {
-    statusText.textContent = "GPS-fejl";
-  }
-}
-
-startBtn.addEventListener("click", startRunner);
-stopBtn.addEventListener("click", stopRunner);
-
-window.addEventListener("pagehide", () => {
-  if (watchId !== null) {
-    navigator.geolocation.clearWatch(watchId);
-  }
-});
-
-statusText.dataset.state = "ready";
-updateLapStats();
-loadStegeStartPoint();
