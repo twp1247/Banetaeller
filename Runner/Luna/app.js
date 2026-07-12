@@ -136,49 +136,23 @@ function resetSession() {
   updateLapStats();
 }
 
-async function loadStegeStartPoint() {
+async function loadSharedStartPoint() {
   try {
-    const response = await fetch(
-      "banen.gpx?v=luna-v03",
-      { cache: "no-store" }
-    );
-
-    if (!response.ok) {
-      throw new Error("Stege-banen kunne ikke hentes.");
-    }
-
-    const xmlText = await response.text();
-    const xml = new DOMParser().parseFromString(
-      xmlText,
-      "application/xml"
-    );
-
-    if (xml.querySelector("parsererror")) {
-      throw new Error("Stege-banens GPX-fil kunne ikke læses.");
-    }
-
-    const firstPoint =
-      xml.getElementsByTagNameNS("*", "trkpt")[0];
-
-    if (!firstPoint) {
-      throw new Error("Stege-banen mangler startpunkt.");
-    }
-
-    const lat = Number(firstPoint.getAttribute("lat"));
-    const lng = Number(firstPoint.getAttribute("lon"));
-
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      throw new Error("Stege-banens startpunkt er ugyldigt.");
-    }
-
-    startPoint = { lat, lng };
-    trackReady = true;
-    statusText.textContent = "Klar ved Stege-banen";
-    statusText.dataset.state = "ready";
-  } catch (error) {
+    const response=await fetch("../../startpoint.json?v="+Date.now(),{cache:"no-store"});
+    if(!response.ok) throw new Error("Startpunkt mangler");
+    const data=await response.json();
+    const lat=Number(data.lat);
+    const lng=Number(data.lng);
+    if(!Number.isFinite(lat)||!Number.isFinite(lng)|| (lat===0&&lng===0)) throw new Error("Startpunkt ugyldigt");
+    startPoint={lat,lng};
+    trackReady=true;
+    statusText.textContent="Startpunkt hentet ✅";
+    statusText.dataset.state="ready";
+  } catch(error) {
     console.error(error);
-    trackReady = false;
-    statusText.textContent = "Stege-banen kunne ikke indlæses";
+    trackReady=false;
+    statusText.textContent="Admin mangler at dele start/mål";
+    statusText.dataset.state="stopped";
   }
 }
 
@@ -357,6 +331,27 @@ function handleGpsError(error) {
   } else if (error.code === 2) {
     statusText.textContent =
       "GPS-position kan ikke findes";
+  } else if (error.code === 3) {
+    statusText.textContent =
+      "GPS bruger for lang tid";
+  } else {
+    statusText.textContent = "GPS-fejl";
+  }
+}
+
+startBtn.addEventListener("click", startRunner);
+stopBtn.addEventListener("click", stopRunner);
+
+window.addEventListener("pagehide", () => {
+  if (watchId !== null) {
+    navigator.geolocation.clearWatch(watchId);
+  }
+});
+
+statusText.dataset.state = "ready";
+updateLapStats();
+loadSharedStartPoint();
+
   } else if (error.code === 3) {
     statusText.textContent =
       "GPS bruger for lang tid";
