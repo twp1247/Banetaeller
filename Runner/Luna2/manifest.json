@@ -1,10 +1,9 @@
 {
-  "name": "Luna 2 – GPS Debug",
-  "short_name": "Luna 2 Debug",
+  "name": "Luna 2 Build 018",
+  "short_name": "Luna2 018",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#0d141b",
+  "background_color": "#0e171f",
   "theme_color": "#101820",
-  "orientation": "portrait",
-  "description": "Hardcore GPS- og checkpoint-test til Stafet For Livet"
+  "orientation": "portrait"
 }
