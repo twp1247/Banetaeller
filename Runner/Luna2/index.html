@@ -12,13 +12,14 @@
 <img src="luna.jpg" alt="Luna">
 <div>
 <p>STAFET FOR LIVET</p>
-<h1>LUNA 2 · BUILD 018</h1>
+<h1>LUNA 2 · BUILD 019</h1>
 <strong id="status">Gem de 4 faste punkter først</strong>
 </div>
 </header>
 
 <section class="card">
-<h2>📍 Gem faste punkter</h2>
+<h2>📍 Trin 1 · Optag faste punkter</h2>
+<p class="mode-info">Gå én omgang og gem de fire punkter undervejs. Når alle fire er gemt, bliver testen automatisk klar.</p>
 <div class="grid">
 <button data-save="0">1 · GEM START/MÅL</button>
 <button data-save="1">2 · GEM FØRSTE SVING</button>
@@ -27,10 +28,12 @@
 </div>
 <div id="saved"></div>
 <button id="clear" class="grey">SLET ALLE PUNKTER</button>
+<button id="download" class="blue" disabled>⬇ HENT checkpoints.json</button>
 </section>
 
 <section class="card">
-<h2>🏁 Test omgang</h2>
+<h2>🏁 Trin 2 · Test punkterne</h2>
+<p class="mode-info">Start ved start/mål og gå en hel omgang. Rækkefølgen skal være START → SVING 1 → LANGSIDE → SVING 2 → MÅL.</p>
 <div class="grid">
 <button id="start" class="green" disabled>▶ START TEST</button>
 <button id="stop" class="red" disabled>■ STOP TEST</button>
@@ -52,10 +55,10 @@
 <div class="wide"><span>Log</span><strong id="log">Tom</strong></div>
 </section>
 
-<p class="version">Luna 2 · Build 018 · Faste checkpoints</p>
+<p class="version">Luna 2 · Build 019 · Optag → Test → Gem</p>
 </main>
 
 <div id="overlay" class="overlay"><div><b>✅</b><span id="overlayText"></span></div></div>
-<script src="app18.js"></script>
+<script src="app19.js"></script>
 </body>
 </html>
