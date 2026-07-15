@@ -2,3 +2,35 @@
 
 .blue{background:#1976d2;width:100%;margin-top:12px}
 .mode-info{margin:0 0 14px;color:#c6d3dc;line-height:1.45}
+
+.lap-card{
+  background:#18364a;
+  border-radius:18px;
+  padding:18px;
+  margin-bottom:14px;
+  text-align:center;
+  border:2px solid rgba(255,255,255,.10);
+}
+.lap-card span{
+  display:block;
+  color:#bfe8ff;
+  font-size:15px;
+  font-weight:900;
+}
+.lap-card strong{
+  display:block;
+  font-size:76px;
+  line-height:1;
+  margin:8px 0;
+}
+.lap-card small{
+  color:#d7e0e6;
+  font-size:17px;
+  font-weight:800;
+}
+body.cheat-alert{
+  background:#741313 !important;
+}
+.overlay.red{
+  background:rgba(120,0,0,.90);
+}

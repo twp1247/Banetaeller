@@ -1,10 +1,10 @@
 {
-  "name": "Luna 2 Build 019",
-  "short_name": "Luna2 019",
+  "name": "Luna 2 Build 020",
+  "short_name": "Luna2 020",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0e171f",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Optag, test og gem fire faste checkpoints"
+  "description": "Flere omgange, omgangstæller og snydealarm"
 }

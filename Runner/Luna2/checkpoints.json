@@ -1,0 +1,31 @@
+{
+  "version": 19,
+  "createdAt": 1784041182878,
+  "zoneRadiusMeters": 15,
+  "checkpoints": {
+    "startFinish": {
+      "lat": 54.9925985,
+      "lng": 12.2837666,
+      "accuracy": 23.582000732421875,
+      "savedAt": 1784040782631
+    },
+    "firstTurn": {
+      "lat": 54.9932385,
+      "lng": 12.2829001,
+      "accuracy": 6.938000202178955,
+      "savedAt": 1784040571792
+    },
+    "oppositeStraight": {
+      "lat": 54.9926678,
+      "lng": 12.2822708,
+      "accuracy": 5.210000038146973,
+      "savedAt": 1784040642578
+    },
+    "secondTurn": {
+      "lat": 54.9920876,
+      "lng": 12.2829228,
+      "accuracy": 32.91299819946289,
+      "savedAt": 1784040843789
+    }
+  }
+}
