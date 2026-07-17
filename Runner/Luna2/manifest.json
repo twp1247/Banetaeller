@@ -1,10 +1,10 @@
 {
-  "name": "Luna 2 Build 022",
-  "short_name": "Luna2 022",
+  "name": "Luna 2 Build 023",
+  "short_name": "Luna2 023",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0e171f",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Kalibrerede checkpoints, omgangstæller og snydealarm"
+  "description": "Efter mål-tilstand, omgangstæller og snydealarm"
 }
