@@ -1,31 +1,48 @@
 {
-  "version": 19,
-  "createdAt": 1784041182878,
-  "zoneRadiusMeters": 15,
+  "version": 21,
+  "calibrationMethod": "average-of-50-accepted-gps-readings",
+  "maxAcceptedAccuracyMeters": 35,
+  "createdAt": 1784296099177,
   "checkpoints": {
     "startFinish": {
-      "lat": 54.9925985,
-      "lng": 12.2837666,
-      "accuracy": 23.582000732421875,
-      "savedAt": 1784040782631
+      "lat": 54.992610638,
+      "lng": 12.283570812,
+      "accuracy": 3.7373200273513794,
+      "averageAccuracy": 3.7373200273513794,
+      "bestAccuracy": 3.2309999465942383,
+      "worstAccuracy": 4.991000175476074,
+      "sampleCount": 50,
+      "savedAt": 1784295755852
     },
     "firstTurn": {
-      "lat": 54.9932385,
-      "lng": 12.2829001,
-      "accuracy": 6.938000202178955,
-      "savedAt": 1784040571792
+      "lat": 54.993326750000016,
+      "lng": 12.282830538000002,
+      "accuracy": 3.8966400146484377,
+      "averageAccuracy": 3.8966400146484377,
+      "bestAccuracy": 3,
+      "worstAccuracy": 6.454999923706055,
+      "sampleCount": 50,
+      "savedAt": 1784295881852
     },
     "oppositeStraight": {
-      "lat": 54.9926678,
-      "lng": 12.2822708,
-      "accuracy": 5.210000038146973,
-      "savedAt": 1784040642578
+      "lat": 54.99265855600002,
+      "lng": 12.282263334,
+      "accuracy": 3.61992000579834,
+      "averageAccuracy": 3.61992000579834,
+      "bestAccuracy": 3,
+      "worstAccuracy": 5.670000076293945,
+      "sampleCount": 50,
+      "savedAt": 1784295990844
     },
     "secondTurn": {
-      "lat": 54.9920876,
-      "lng": 12.2829228,
-      "accuracy": 32.91299819946289,
-      "savedAt": 1784040843789
+      "lat": 54.99209900000001,
+      "lng": 12.282999594000003,
+      "accuracy": 4.0968799924850465,
+      "averageAccuracy": 4.0968799924850465,
+      "bestAccuracy": 3.2980000972747803,
+      "worstAccuracy": 6.2270002365112305,
+      "sampleCount": 50,
+      "savedAt": 1784296096838
     }
   }
 }
