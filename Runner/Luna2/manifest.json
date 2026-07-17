@@ -1,10 +1,10 @@
 {
-  "name": "Luna 2 Build 020",
-  "short_name": "Luna2 020",
+  "name": "Luna 2 Build 021 Kalibrering",
+  "short_name": "Luna2 Kalibrering",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0e171f",
   "theme_color": "#101820",
   "orientation": "portrait",
-  "description": "Flere omgange, omgangstæller og snydealarm"
+  "description": "GPS-kalibrering af fire checkpoints med 50 målinger pr. punkt"
 }

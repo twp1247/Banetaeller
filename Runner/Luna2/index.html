@@ -2,9 +2,11 @@
 <html lang="da">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Luna 2 Build 018</title>
-<link rel="stylesheet" href="style.css?v=18">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#101820">
+<title>Luna 2 · Build 021 Kalibrering</title>
+<link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="style.css?v=21">
 </head>
 <body>
 <main>
@@ -12,59 +14,43 @@
 <img src="luna.jpg" alt="Luna">
 <div>
 <p>STAFET FOR LIVET</p>
-<h1>LUNA 2 · BUILD 020</h1>
-<strong id="status">Gem de 4 faste punkter først</strong>
+<h1>LUNA 2 · BUILD 021</h1>
+<strong id="status">Klar til GPS-kalibrering</strong>
 </div>
 </header>
 
-<section class="card">
-<h2>📍 Trin 1 · Optag faste punkter</h2>
-<p class="mode-info">Gå én omgang og gem de fire punkter undervejs. Når alle fire er gemt, bliver testen automatisk klar.</p>
-<div class="grid">
-<button data-save="0">1 · GEM START/MÅL</button>
-<button data-save="1">2 · GEM FØRSTE SVING</button>
-<button data-save="2">3 · GEM MODSATTE LANGSIDE</button>
-<button data-save="3">4 · GEM ANDET SVING</button>
+<section class="hero card">
+<h2>📍 Kalibrér banens 4 punkter</h2>
+<p>Stå helt stille ved punktet, og tryk <b>START 50 MÅLINGER</b>. Telefonen tager 50 godkendte GPS-målinger og gemmer gennemsnittet.</p>
+<div class="current-point">
+<span>Aktuelt punkt</span>
+<strong id="pointName">1 · START/MÅL</strong>
 </div>
+<div class="counter"><strong id="count">0</strong><span>/ 50</span></div>
+<div class="bar"><div id="barFill"></div></div>
+<button id="measure" class="green">▶ START 50 MÅLINGER</button>
+<button id="cancel" class="red" disabled>■ AFBRYD MÅLING</button>
+</section>
+
+<section class="card">
+<h2>Gemte punkter</h2>
 <div id="saved"></div>
-<button id="clear" class="grey">SLET ALLE PUNKTER</button>
+<button id="reset" class="grey">SLET OG START FORFRA</button>
 <button id="download" class="blue" disabled>⬇ HENT checkpoints.json</button>
-</section>
-
-<section class="lap-card">
-  <span>🏁 GODKENDTE OMGANGE</span>
-  <strong id="lapCount">0</strong>
-  <small id="lapStatus">Klar til test</small>
-</section>
-
-<section class="card">
-<h2>🏁 Trin 2 · Test punkterne</h2>
-<p class="mode-info">Start ved start/mål og gå en hel omgang. Rækkefølgen skal være START → SVING 1 → LANGSIDE → SVING 2 → MÅL.</p>
-<div class="grid">
-<button id="start" class="green" disabled>▶ START TEST</button>
-<button id="stop" class="red" disabled>■ STOP TEST</button>
-</div>
-<p id="next">Næste: Gem alle 4 punkter</p>
-<div id="progress" class="progress"></div>
 </section>
 
 <section class="data">
 <div><span>GPS-status</span><strong id="gps">Ikke startet</strong></div>
-<div><span>Nøjagtighed</span><strong id="acc">—</strong></div>
-<div><span>Latitude</span><strong id="lat">—</strong></div>
-<div><span>Longitude</span><strong id="lng">—</strong></div>
-<div><span>Afstand til næste</span><strong id="dist">—</strong></div>
-<div><span>GPS-opdateringer</span><strong id="updates">0</strong></div>
-<div><span>Accepterede</span><strong id="accepted">0</strong></div>
-<div><span>Afviste</span><strong id="rejected">0</strong></div>
-<div class="wide"><span>Besked</span><strong id="msg">Ingen</strong></div>
-<div class="wide"><span>Log</span><strong id="log">Tom</strong></div>
+<div><span>Aktuel nøjagtighed</span><strong id="accuracy">—</strong></div>
+<div><span>Godkendte målinger</span><strong id="accepted">0</strong></div>
+<div><span>Afviste målinger</span><strong id="rejected">0</strong></div>
+<div><span>Gennemsnitlig nøjagtighed</span><strong id="avgAccuracy">—</strong></div>
+<div><span>Seneste koordinat</span><strong id="coordinate">—</strong></div>
+<div class="wide"><span>Besked</span><strong id="message">Gå til start/mål og stå stille.</strong></div>
 </section>
 
-<p class="version">Luna 2 · Build 020 · Flere omgange + snydealarm</p>
+<p class="version">Luna 2 · Build 021 · 50-målingers GPS-kalibrering</p>
 </main>
-
-<div id="overlay" class="overlay"><div><b>✅</b><span id="overlayText"></span></div></div>
-<script src="app20.js"></script>
+<script src="app21.js?v=21"></script>
 </body>
 </html>
